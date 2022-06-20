@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="demo-jose-servlet:war exploded">
-    <output-path>$PROJECT_DIR$/target/demo-jose-servlet-1.0.0-SNAPSHOT</output-path>
+    <output-path>$PROJECT_DIR$/target/demo-jose-servlet-0.9.1-SNAPSHOT</output-path>
     <properties id="maven-jee-properties">
       <options>
         <exploded>true</exploded>
@@ -14,6 +14,7 @@
           <element id="module-output" name="demo-jose-servlet" />
         </element>
         <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: org.json:json:20220320" />
           <element id="library" level="project" name="Maven: com.nimbusds:nimbus-jose-jwt:9.23" />
           <element id="library" level="project" name="Maven: com.github.stephenc.jcip:jcip-annotations:1.0-1" />
           <element id="library" level="project" name="Maven: net.bull.javamelody:javamelody-core:1.91.0" />
@@ -22,7 +23,7 @@
         </element>
       </element>
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/target/demo-jose-servlet-1.0.0-SNAPSHOT/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/demo-jose-servlet-0.9.1-SNAPSHOT/META-INF/MANIFEST.MF" />
       </element>
       <element id="javaee-facet-resources" facet="demo-jose-servlet/web/Web" />
     </root>
