@@ -1,4 +1,3 @@
-<%@page import="java.io.InputStream" %>
 <%@ page import="java.util.ResourceBundle" %>
 
 <%
@@ -8,7 +7,8 @@
 %>
 
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
+<!-- <html lang="en" data-theme="dark"> -->
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,32 +27,34 @@
         <li>Monitoring: <a href="monitoring" data-tooltip="Go to JavaMelody Monitoring page">JavaMelody</a></li>
     </ul>
     <hgroup>
-        <h1>Sample Call for RSA-OAEP-256 decryption</h1>
-        <h2>Post form</h2>
+        <h3>Sample calls for RSA-OAEP-256 decryption</h3>
     </hgroup>
-    <form method="post" action="decrypt" >
-        <label for="privateKey">
-            privateKey
-            <textarea type="text" id="privateKey" name="privateKey" placeholder="privateKey" required><%= sEncKey %></textarea>
-        </label>
-        <label for="encodedString">
-            encodedString
-            <textarea type="text" id="encodedString" name="encodedString" placeholder="encodedString" required><%= sEncMetaData %></textarea>
-        </label>
-        <button type="submit">Absenden</button>
-    </form>
-
-    <hgroup>
-        <h1>Sample Call for RSA-OAEP-256 decryption</h1>
-        <h2>curl</h2>
-    </hgroup>
-    <pre>data.txt
+    <!-- Secondary -->
+    <details open>
+        <summary role="button" class="secondary">Sample 1: Post form (application/x-www-form-urlencoded)</summary>
+        <form method="post" action="decrypt" >
+            <div class="grid">
+                <label for="privateKey">
+                    privateKey
+                    <textarea type="text" id="privateKey" name="privateKey" placeholder="enter private key (format: json)" required><%= sEncKey %></textarea>
+                </label>
+                <label for="encodedString">
+                    encodedString
+                    <textarea type="text" id="encodedString" name="encodedString" placeholder="enter base64 encoded string (charset: utf-8, format: json)" required><%= sEncMetaData %></textarea>
+                </label>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </details>
+    <details>
+        <summary role="button" class="secondary">Sample 2: curl</summary>
+        <pre>data.txt
 -------
 privateKey=<%= sEncKey %>&encodedString=<%= sEncMetaData %>
 -------
         curl -vvv  http://localhost:8080/demo_jose_servlet_war_exploded/decrypt -d "@data.txt"
 -------
-> POST /demo_jose_servlet_war_exploded/decrypt HTTP/1.1
+> POST ${pageContext.request.contextPath}/decrypt HTTP/1.1
 > Host: localhost:8080
 > User-Agent: curl/7.79.1
 > Accept: */*
@@ -77,27 +79,20 @@ d0e9bf9817965166312983fb4569c623e53a7c162c8de0a5b7b80aeee6cb47824a9606e2c64031d6
 dc113fc56420c0a564bd630a42a03fe9e05a5c26a93531fcd9fb93c46f1daddb43dd8b52ae45584a925bec077676d02c02715b9356"}}}}* Connect
 ion #0 to host localhost left intact
     </pre>
-
-    <hgroup>
-        <h1>Sample Call for RSA-OAEP-256 decryption</h1>
-        <h2>Oracle PL/SQL <a href="https://oracle-base.com/articles/misc/utl_http-and-ssl">Source: oracle-base</a> )</h2>
-    </hgroup>
+    </details>
+    <details open>
+        <summary role="button" class="secondary">Sample 3: Oracle PL/SQL <a href="https://oracle-base.com/articles/misc/utl_http-and-ssl">Source: oracle-base</a></summary>
         <pre>
 set serveroutput on size unlimited define off
 declare
   p_wallet_path varchar2(1000); -- := 'file:?/_wallet/';
   p_wallet_password varchar2(1000); -- := 'changeit';
-  p_url varchar2(1000) := 'http://server:port/demo-jose-servlet/decrypt';
+  p_url varchar2(1000) := 'http://server:port${pageContext.request.contextPath}/decrypt';
   l_http_request   UTL_HTTP.req;
   l_http_response  UTL_HTTP.resp;
   l_text           varchar2(32767);
   l_result         clob;
   l_params         varchar2(32767) := 'privateKey=<%= sEncKey %>&encodedString=<%= sEncMetaData %>';
-  jo               JSON_OBJECT_T;
-  ja               JSON_ARRAY_T;
-  keys             JSON_KEY_LIST;
-  keys_string      VARCHAR2(32767);
-
 begin
   -- Make a HTTP request and get the response.
   l_http_request  := UTL_HTTP.begin_request( url => p_url, method => 'POST');
@@ -117,24 +112,14 @@ begin
        DBMS_OUTPUT.put_line (l_text);
        l_result := l_result || l_text;
      end loop;
-
-     ja := new JSON_ARRAY_T;
-     jo := JSON_OBJECT_T.parse(l_result);
-     keys := jo.get_keys;
-      FOR i IN 1..keys.COUNT LOOP
-         ja.append(keys(i));
-        DBMS_OUTPUT.put_line(a');
-      END LOOP;
-      keys_string := ja.to_string;
-      DBMS_OUTPUT.put_line(keys_string);
-
    exception
      WHEN UTL_HTTP.end_of_body THEN
        UTL_HTTP.end_response(l_http_response);
    end;
 end;
 /
-</pre>
+        </pre>
+    </details>
 
     <hgroup>
         <h2>Debugging</h2>
@@ -160,7 +145,7 @@ os.name:          ${System.getProperty("os.name")}
 os.version:       ${System.getProperty("os.version")}
 file.encoding:    ${System.getProperty("file.encoding")}
 sun.jnu.encoding: ${System.getProperty("sun.jnu.encoding")}</pre>
-    <p>page built with <a href="https://picocss.com/">Pico.css</a>, decryption with <a href="https://bitbucket.org/connect2id/nimbus-jose-jwt">Nimbus JOSW+JWT (connect2id)</a> </p>
+    <p>page built with <a href="https://picocss.com/">Pico.css</a>, decryption with <a href="https://bitbucket.org/connect2id/nimbus-jose-jwt">Nimbus JOSE+JWT (connect2id)</a> </p>
 </main>
 </body>
 </html>

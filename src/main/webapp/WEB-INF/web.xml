@@ -11,6 +11,10 @@
             <param-name>update-check-disabled</param-name>
             <param-value>true</param-value>
         </init-param>
+        <init-param>
+            <param-name>system-actions-enabled</param-name>
+            <param-value>false</param-value>
+        </init-param>
     </filter>
     <filter-mapping>
         <filter-name>javamelody</filter-name>
