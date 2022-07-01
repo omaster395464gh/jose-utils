@@ -39,25 +39,26 @@ de.pdv.demo.level = ALL
 ``` sql
 set serveroutput on size unlimited define off
 declare
-  p_wallet_path varchar2(1000); -- := 'file:?/_wallet/';
+  p_wallet_path varchar2(1000);     -- := 'file:?/_wallet/';
   p_wallet_password varchar2(1000); -- := 'changeit';
-  p_url varchar2(1000) := 'http://server:port/demo-jose-servlet/decrypt';
+  p_url varchar2(1000) := 'http(s)://server:port/demo-jose-servlet/decrypt';  
   l_http_request   UTL_HTTP.req;
   l_http_response  UTL_HTTP.resp;
   l_text           varchar2(32767);
   l_result         clob;
   l_params         varchar2(32767) := 'privateKey={"alg":"RSA-OAEP-256","d":"pVx...di4","kty":"RSA","n":"5Ew...SvA"}&encodedString=eyJ...h_A';
 begin
+   IF p_wallet_path IS NOT NULL AND p_wallet_password IS NOT NULL THEN
+     UTL_HTTP.set_wallet(p_wallet_path, p_wallet_password);
+   end if;
+
   -- Make a HTTP request and get the response.
   l_http_request  := UTL_HTTP.begin_request( url => p_url, method => 'POST');
 
-   IF p_wallet_path IS NOT NULL AND p_wallet_password IS NOT NULL THEN
-     UTL_HTTP.set_wallet('file:' || p_wallet_path, p_wallet_password);
-   end if;
-   UTL_HTTP.SET_HEADER (r      =>  l_http_request, name   =>  'Content-Type',   value  =>  'application/x-www-form-urlencoded');
-   UTL_HTTP.SET_HEADER (r      =>  l_http_request, name   =>  'Content-Length', value  => length(l_params) );
+   UTL_HTTP.SET_HEADER (r => l_http_request, name => 'Content-Type',   value =>  'application/x-www-form-urlencoded');
+   UTL_HTTP.SET_HEADER (r => l_http_request, name => 'Content-Length', value => length(l_params) );
    UTL_HTTP.SET_BODY_CHARSET ('AL32UTF8');
-   UTL_HTTP.WRITE_TEXT (r      =>  l_http_request, data   =>   l_params);
+   UTL_HTTP.WRITE_TEXT (r => l_http_request, data => l_params);
    l_http_response := UTL_HTTP.get_response(l_http_request );
    l_result := '';
    begin
