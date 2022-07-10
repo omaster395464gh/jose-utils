@@ -39,38 +39,43 @@ de.pdv.demo.level = ALL
 ``` sql
 set serveroutput on size unlimited define off
 declare
-  p_wallet_path varchar2(1000);     -- := 'file:?/_wallet/';
-  p_wallet_password varchar2(1000); -- := 'changeit';
-  p_url varchar2(1000) := 'http(s)://server:port/demo-jose-servlet/decrypt';  
-  l_http_request   UTL_HTTP.req;
-  l_http_response  UTL_HTTP.resp;
-  l_text           varchar2(32767);
-  l_result         clob;
-  l_params         varchar2(32767) := 'privateKey={"alg":"RSA-OAEP-256","d":"pVx...di4","kty":"RSA","n":"5Ew...SvA"}&encodedString=eyJ...h_A';
+  p_wallet_path     varchar2(1000);  -- := 'file:?/_wallet/';
+  p_wallet_password varchar2(1000);  -- := 'changeit';
+  p_url             varchar2(1000)  := 'http(s)://server:port/demo-jose-servlet/decrypt';  
+  p_proxy_override  varchar2(1000);  -- := 'http://localhost:8888';
+  l_result          clob;
+  l_privateKey      clob := '{"alg":"RSA-OAEP-256","d":"pVx...di4","kty":"RSA","n":"5Ew...SvA"}';
+  l_encodedString   clob := 'eyJ...h_A';
+  l_boundary        varchar2(100) := '472D11119A46B891';
+  
+  function get_multipart_as_clob return clob 
+  as
+    l_crlf          varchar2(2) := CHR(13)||CHR(10);
+    l_request_clob  clob;
+  begin
+    l_request_clob := '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="privateKey"';
+    l_request_clob := l_request_clob || l_crlf ;
+    l_request_clob := l_request_clob || l_crlf || l_privateKey;
+    l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="encodedString"';
+    l_request_clob := l_request_clob || l_crlf || l_crlf ||l_encodedString;
+    l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||'--';
+    return l_request_clob;
+  end;
+ 
 begin
-   IF p_wallet_path IS NOT NULL AND p_wallet_password IS NOT NULL THEN
-     UTL_HTTP.set_wallet(p_wallet_path, p_wallet_password);
-   end if;
-
-  -- Make a HTTP request and get the response.
-  l_http_request  := UTL_HTTP.begin_request( url => p_url, method => 'POST');
-
-   UTL_HTTP.SET_HEADER (r => l_http_request, name => 'Content-Type',   value =>  'application/x-www-form-urlencoded');
-   UTL_HTTP.SET_HEADER (r => l_http_request, name => 'Content-Length', value => length(l_params) );
-   UTL_HTTP.SET_BODY_CHARSET ('AL32UTF8');
-   UTL_HTTP.WRITE_TEXT (r => l_http_request, data => l_params);
-   l_http_response := UTL_HTTP.get_response(l_http_request );
-   l_result := '';
-   begin
-     loop
-       UTL_HTTP.read_text(l_http_response, l_text, 32766);
-       DBMS_OUTPUT.put_line (l_text);
-       l_result := l_result || l_text;
-     end loop;
-   exception
-     WHEN UTL_HTTP.end_of_body THEN
-       UTL_HTTP.end_response(l_http_response);
-   end;
+    apex_web_service.g_request_headers(1).name := 'content-type';
+    apex_web_service.g_request_headers(1).value := 'multipart/form-data; boundary='||l_boundary;
+    l_result := apex_web_service.make_rest_request(
+        p_url => p_url
+        , p_http_method => 'POST'
+        , p_proxy_override => p_proxy_override
+        , p_body => get_multipart_as_clob()
+        , p_wallet_path => p_wallet_path
+        , p_wallet_pwd => p_wallet_password
+    );
+   dbms_output.put_line ('Code : '||apex_web_service.g_status_code);
+   dbms_output.put_line (utl_http.get_detailed_sqlerrm);
+   dbms_output.put_line ('Body : '||l_result);   
 end;
 /
 ```

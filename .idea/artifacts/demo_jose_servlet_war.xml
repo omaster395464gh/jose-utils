@@ -7,7 +7,7 @@
         <packaging>war</packaging>
       </options>
     </properties>
-    <root id="archive" name="demo-jose-servlet-0.9.1-SNAPSHOT.war">
+    <root id="archive" name="demo-jose-servlet-0.9.5-SNAPSHOT.war">
       <element id="artifact" artifact-name="demo-jose-servlet:war exploded" />
     </root>
   </artifact>
