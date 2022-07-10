@@ -6,7 +6,7 @@
 
     <groupId>de.pdv.demo</groupId>
     <artifactId>demo-jose-servlet</artifactId>
-    <version>0.9.5-SNAPSHOT</version>
+    <version>0.10.1-SNAPSHOT</version>
     <name>demo-jose-servlet</name>
     <packaging>war</packaging>
 
