@@ -1,7 +1,7 @@
 # demo-jose-servlet
 Servlet demo for decrypt json file with Nimbus JOSE+JWT library
 
-* 3 samples for post form, curl and oracle pl/sql 
+* 6 samples for post form, curl and oracle pl/sql 
 * Nimbus JOSE+JWT (connect2id) for decryption
   https://bitbucket.org/connect2id/nimbus-jose-jwt
 * Uses JavaMelody for monitoring
@@ -9,7 +9,10 @@ Servlet demo for decrypt json file with Nimbus JOSE+JWT library
 * Uses Pico.css webjar for elegant styles with a minimal css framework
   https://picocss.com/
 * Use Java 8 LTS (also tested with Java 17 LTS and Java 11 LTS)
-* Demo data for curl / jsp: [src/main/resources/demo.properties](src/main/resources/demo.properties)
+* Demo data for curl / jsp: <br/>
+  [src/main/resources/demo.properties](src/main/resources/demo.properties)<br/>
+  [src/main/webapp/demo/privateKey.txt](src/main/webapp/demo/privateKey.txt)<br/>
+  [src/main/webapp/demo/encodedString.txt](src/main/webapp/demo/encodedString.txt)
 
 ## Run tests
 `mvn test`
