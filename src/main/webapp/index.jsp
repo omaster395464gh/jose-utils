@@ -47,7 +47,7 @@
         </form>
     </details>
     <details>
-        <summary role="button" class="secondary">Sample 2: Post file to decrypt (application/form-data) - max 20 MiB </summary>
+        <summary role="button" class="secondary">Sample 2: Post file to decrypt (multipart/form-data) - max 20 MiB </summary>
         <p>Download <a href="demo/privateKey.txt">privateKey.txt</a> and <a href="demo/encodedString.txt">encodedString.txt</a> </p>
         <form method="post" action="decrypt" enctype="multipart/form-data">
             <div class="grid">

@@ -6,7 +6,7 @@
 
     <groupId>de.pdv.demo</groupId>
     <artifactId>demo-jose-servlet</artifactId>
-    <version>0.10.1-SNAPSHOT</version>
+    <version>0.10.2-SNAPSHOT</version>
     <name>demo-jose-servlet</name>
     <packaging>war</packaging>
 
@@ -73,6 +73,7 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.11.0</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>
@@ -147,10 +148,10 @@
                             <image>compile.pdv.lan:8001/product/base/vis-tomcat:9.0</image>
                         </from>
                         <to>
-                            <image>fop4apex</image>
+                            <image>demo-jose-servlet</image>
                         </to>
                         <container>
-                            <appRoot>/opt/pdv/webapps/fop4apex</appRoot>
+                            <appRoot>/opt/pdv/webapps/demo-jose-servlet</appRoot>
                         </container>
                     </configuration>
                 </plugin>
