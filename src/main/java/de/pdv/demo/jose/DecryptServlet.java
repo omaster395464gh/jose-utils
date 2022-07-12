@@ -19,14 +19,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.util.Base64;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @WebServlet(name = "decrypt", value = "/decrypt")
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, //   2MB
-        maxFileSize = 1024 * 1024 * 20,      //  30MB
-        maxRequestSize = 1024 * 1024 * 30)   //  50MB
+        maxFileSize = 1024 * 1024 * 50,      //  50MB
+        maxRequestSize = 1024 * 1024 * 60)   //  60MB
 public class DecryptServlet extends HttpServlet {
     private static final Logger logger = Logger.getLogger(DecryptServlet.class.getName());
     private static final String SAVE_DIR = "uploadFiles";
@@ -105,6 +106,7 @@ public class DecryptServlet extends HttpServlet {
 
         String privateKey = "";
         String encodedString = "";
+        String resultAsBase64 = "";
 
         for (Part part : request.getParts()) {
             //String fileName = extractFileName(part);
@@ -117,10 +119,14 @@ public class DecryptServlet extends HttpServlet {
             if (part.getName().equalsIgnoreCase("encodedString")) {
                 encodedString = IOUtils.toString(part.getInputStream(), StandardCharsets.UTF_8);
             }
+            if (part.getName().equalsIgnoreCase("resultAsBase64")) {
+                resultAsBase64 = IOUtils.toString(part.getInputStream(), StandardCharsets.UTF_8);
+            }
             // part.write(savePath + File.separator + fileName);
         }
 
-        response.setContentType("application/json");
+        response.setHeader("Content-Disposition", "attachment; filename=\"result.txt\"");
+        response.setContentType("application/octet-stream");
         response.setCharacterEncoding("UTF-8");
 
         // String contentType = request.getContentType();
@@ -134,6 +140,9 @@ public class DecryptServlet extends HttpServlet {
             String sDecrypted;
             try {
                 sDecrypted = decrypt(privateKey, encodedString);
+                if (resultAsBase64.equalsIgnoreCase("on")) {
+                    sDecrypted = Base64.getEncoder().encodeToString(sDecrypted.getBytes(StandardCharsets.UTF_8));
+                }
                 response.getWriter().write(sDecrypted);
             } catch (JOSEException e) {
                 logger.log(Level.SEVERE, "Decryption failed, JOSEException",e);

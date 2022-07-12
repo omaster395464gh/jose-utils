@@ -2,8 +2,10 @@
 Servlet demo for decrypt json file with Nimbus JOSE+JWT library
 
 * 6 samples for post form, curl and oracle pl/sql 
+  optional output as base64 (UTF-8)
 * Nimbus JOSE+JWT (connect2id) for decryption
   https://bitbucket.org/connect2id/nimbus-jose-jwt
+  https://docs.fitko.de/fit-connect/docs/receiving/decrypt/
 * Uses JavaMelody for monitoring
   https://github.com/javamelody/javamelody/wiki
 * Uses Pico.css webjar for elegant styles with a minimal css framework
@@ -13,6 +15,12 @@ Servlet demo for decrypt json file with Nimbus JOSE+JWT library
   [src/main/resources/demo.properties](src/main/resources/demo.properties)<br/>
   [src/main/webapp/demo/privateKey.txt](src/main/webapp/demo/privateKey.txt)<br/>
   [src/main/webapp/demo/encodedString.txt](src/main/webapp/demo/encodedString.txt)
+
+## Servlet Parameter
+* String privateKey: Private Key in JSON-Format (RSA-OAEP-256)
+* String encodedString: Base64 encoded data ( maximum: 50 MiB / 30 MiB content / 60 MiB request size )
+* String resultAsBase64: Off / On (Default: Off)
+* Result: decrypted string, optionally encoded as base64 (Charset: UTF-8)
 
 ## Run tests
 `mvn test`
@@ -46,7 +54,7 @@ declare
   p_wallet_password varchar2(1000);  -- := 'changeit';
   p_url             varchar2(1000)  := 'http(s)://server:port/demo-jose-servlet/decrypt';  
   p_proxy_override  varchar2(1000);  -- := 'http://localhost:8888';
-  l_result          clob;
+  l_result          blob;
   l_privateKey      clob := '{"alg":"RSA-OAEP-256","d":"pVx...di4","kty":"RSA","n":"5Ew...SvA"}';
   l_encodedString   clob := 'eyJ...h_A';
   l_boundary        varchar2(100) := '472D11119A46B891';
@@ -61,6 +69,8 @@ declare
     l_request_clob := l_request_clob || l_crlf || l_privateKey;
     l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="encodedString"';
     l_request_clob := l_request_clob || l_crlf || l_crlf ||l_encodedString;
+    l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="resultAsBase64"';
+    l_request_clob := l_request_clob || l_crlf || l_crlf || 'off';    -- on / off (default: off)
     l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||'--';
     return l_request_clob;
   end;
@@ -68,7 +78,7 @@ declare
 begin
     apex_web_service.g_request_headers(1).name := 'content-type';
     apex_web_service.g_request_headers(1).value := 'multipart/form-data; boundary='||l_boundary;
-    l_result := apex_web_service.make_rest_request(
+    l_result := apex_web_service.make_rest_request_b(
         p_url => p_url
         , p_http_method => 'POST'
         , p_proxy_override => p_proxy_override
@@ -78,7 +88,8 @@ begin
     );
    dbms_output.put_line ('Code : '||apex_web_service.g_status_code);
    dbms_output.put_line (utl_http.get_detailed_sqlerrm);
-   dbms_output.put_line ('Body : '||l_result);   
+   dbms_output.put_line ('Length: '||dbms_lob.getlength(l_result));
+   dbms_output.put_line ('First 32 KiB: '||utl_raw.cast_to_nvarchar2(dbms_lob.substr(l_result)));
 end;
 /
 ```

@@ -43,11 +43,15 @@
                     <textarea type="text" id="encodedString2" name="encodedString" placeholder="enter base64 encoded string (charset: utf-8, format: json)" required><%= sEncMetaData %></textarea>
                 </label>
             </div>
+            <label for="switch2">
+                <input type="checkbox" id="switch2" name="resultAsBase64" role="switch">
+                resultAsBase64 (on/off) - Encode result as base64
+            </label>
             <button type="submit">Submit</button>
         </form>
     </details>
     <details>
-        <summary role="button" class="secondary">Sample 2: Post file to decrypt (multipart/form-data) - max 20 MiB </summary>
+        <summary role="button" class="secondary">Sample 2: Post file to decrypt (multipart/form-data) - max 30 MiB </summary>
         <p>Download <a href="demo/privateKey.txt">privateKey.txt</a> and <a href="demo/encodedString.txt">encodedString.txt</a> </p>
         <form method="post" action="decrypt" enctype="multipart/form-data">
             <div class="grid">
@@ -60,6 +64,10 @@
                     <input type="file" id="encodedString1" name="encodedString"/>
                 </label>
             </div>
+            <label for="switch2">
+                <input type="checkbox" id="switch1" name="resultAsBase64" role="switch">
+                resultAsBase64 (on/off) - Encode result as base64
+            </label>
             <button type="submit">Submit</button>
         </form>
     </details>
@@ -69,9 +77,9 @@
         <p>Download <a href="demo/privateKey.txt">privateKey.txt</a> and <a href="demo/encodedString.txt">encodedString.txt</a> </p>
         <pre>
 -------
-curl -vvv http://localhost.fiddler:8080${pageContext.request.contextPath}/decrypt -F "privateKey=@privateKey.txt" -F "encodedString=@encodedString.txt"
+curl -vvv http://localhost:8080${pageContext.request.contextPath}/decrypt -F "privateKey=@privateKey.txt" -F "encodedString=@encodedString.txt" -F "resultAsBase64=Off"
 -------
-> POST http://localhost.fiddler:8080/demo_jose_servlet_war_exploded/decrypt HTTP/1.1
+> POST http://localhost:8080/demo_jose_servlet_war_exploded/decrypt HTTP/1.1
 > Host: localhost:8080
 > User-Agent: curl/7.79.1
 > Accept: */*
@@ -112,7 +120,7 @@ declare
   p_wallet_password varchar2(1000);  -- := 'changeit';
   p_url             varchar2(1000)  := 'http(s)://server:port${pageContext.request.contextPath}/decrypt';
   p_proxy_override  varchar2(1000);  -- := 'http://localhost:8888';
-  l_result          clob;
+  l_result          blob;
   l_privateKey      clob := '<%= sEncKey %>';
   l_encodedString   clob := '<%= sEncMetaData %>';
   l_boundary        varchar2(100) := '472D11119A46B891';
@@ -127,6 +135,8 @@ declare
     l_request_clob := l_request_clob || l_crlf || l_privateKey;
     l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="encodedString"';
     l_request_clob := l_request_clob || l_crlf || l_crlf ||l_encodedString;
+    l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="resultAsBase64"';
+    l_request_clob := l_request_clob || l_crlf || l_crlf || 'off';    -- on / off (default: off)
     l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||'--';
     return l_request_clob;
   end;
@@ -134,7 +144,7 @@ declare
 begin
     apex_web_service.g_request_headers(1).name := 'content-type';
     apex_web_service.g_request_headers(1).value := 'multipart/form-data; boundary='||l_boundary;
-    l_result := apex_web_service.make_rest_request(
+    l_result := apex_web_service.make_rest_request_b(
         p_url => p_url
         , p_http_method => 'POST'
         , p_proxy_override => p_proxy_override
@@ -144,7 +154,8 @@ begin
     );
    dbms_output.put_line ('Code : '||apex_web_service.g_status_code);
    dbms_output.put_line (utl_http.get_detailed_sqlerrm);
-   dbms_output.put_line ('Body : '||l_result);   
+   dbms_output.put_line ('Length: '||dbms_lob.getlength(l_result));
+   dbms_output.put_line ('First 32 KiB: '||utl_raw.cast_to_nvarchar2(dbms_lob.substr(l_result)));
 end;
 /
         </pre>
@@ -160,7 +171,7 @@ declare
   p_url             varchar2(1000)  := 'http(s)://server:port${pageContext.request.contextPath}/decrypt';
   p_proxy_override  varchar2(1000);  -- := 'http://localhost:8888';
   l_request_blob    blob;
-  l_result          clob;
+  l_result          blob;
   l_privateKey      clob := '<%= sEncKey %>';
   l_encodedString   clob := '<%= sEncMetaData %>';
   l_boundary        varchar2(100) := '472D11119A46B891';
@@ -174,9 +185,13 @@ begin
         p_multipart    => l_multipart,
         p_name         => 'encodedString',
         p_body         => l_encodedString );
+    apex_web_service.APPEND_TO_MULTIPART (
+        p_multipart    => l_multipart,
+        p_name         => 'resultAsBase64',
+        p_body         => 'off' );  -- on / off
     l_request_blob := apex_web_service.generate_request_body ( p_multipart => l_multipart );
     
-    l_result := apex_web_service.make_rest_request(
+    l_result := apex_web_service.make_rest_request_b(
         p_url => p_url
         , p_http_method => 'POST'
         , p_proxy_override => p_proxy_override
@@ -184,9 +199,11 @@ begin
         , p_wallet_path => p_wallet_path
         , p_wallet_pwd => p_wallet_password
     );
+
    dbms_output.put_line ('Code : '||apex_web_service.g_status_code);
    dbms_output.put_line (utl_http.get_detailed_sqlerrm);
-   dbms_output.put_line ('Body : '||l_result);   
+   dbms_output.put_line ('Length: '||dbms_lob.getlength(l_result));
+   dbms_output.put_line ('First 32 KiB: '||utl_raw.cast_to_nvarchar2(dbms_lob.substr(l_result)));
 end;
 /
         </pre>
@@ -202,6 +219,7 @@ declare
   p_url             varchar2(1000)  := 'http(s)://server:port${pageContext.request.contextPath}/decrypt';
   p_proxy_override  varchar2(1000); --  := 'http://localhost:8888';
   l_result          clob;
+  l_blob            blob;
   l_privateKey      clob := '<%= sEncKey %>';
   l_encodedString   clob := '<%= sEncMetaData %>';
   l_boundary        varchar2(100) := '472D11119A46B891';
@@ -254,6 +272,8 @@ end;
     l_request_clob := l_request_clob || l_crlf || l_privateKey;
     l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="encodedString"';
     l_request_clob := l_request_clob || l_crlf || l_crlf ||l_encodedString;
+    l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="resultAsBase64"';
+    l_request_clob := l_request_clob || l_crlf || l_crlf || 'on';    -- on / off (default: off)
     l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||'--';
     return l_request_clob;
   end;
@@ -267,7 +287,12 @@ begin
    END IF;
    l_result := PostRecClob(p_url, get_multipart_as_clob());
    dbms_output.put_line (utl_http.get_detailed_sqlerrm);
-   dbms_output.put_line ('Body : '||substr(l_result,1,10000));   
+   dbms_output.put_line ('Body : '||substr(l_result,1,10000));
+
+   l_blob := apex_web_service.clobbase642blob(l_result);
+   dbms_output.put_line ('Length: '||dbms_lob.getlength(l_blob));
+   dbms_output.put_line ('First 32 KiB: '||utl_raw.cast_to_nvarchar2(dbms_lob.substr(l_blob)));
+
 end;
 /
         </pre>
