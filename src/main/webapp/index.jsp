@@ -23,7 +23,7 @@
         <h2>Links</h2>
     </hgroup>
     <ul>
-        <li>Demo 2: <a href="decrypt" data-tooltip="Run decrypt servlet with demo data">decrypt servlet</a></li>
+        <li>Demo: <a href="decrypt" data-tooltip="Run decrypt servlet with demo data">decrypt servlet</a></li>
         <li>Monitoring: <a href="monitoring" data-tooltip="Go to JavaMelody Monitoring page">JavaMelody</a></li>
     </ul>
     <hgroup>

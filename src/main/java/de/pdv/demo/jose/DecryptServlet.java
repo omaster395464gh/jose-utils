@@ -2,6 +2,7 @@ package de.pdv.demo.jose;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEObject;
+import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.RSADecrypter;
 import com.nimbusds.jose.jwk.RSAKey;
 import org.apache.commons.io.IOUtils;
@@ -42,11 +43,11 @@ public class DecryptServlet extends HttpServlet {
         sEncKey = labels.getString("data.key");
     }
 
-    public String decrypt(String keyStr, String encryptedStr) throws JOSEException, ParseException {
+    public Payload decryptPayload(String keyStr, String encryptedStr) throws JOSEException, ParseException {
         RSAKey jwk = RSAKey.parse(keyStr);
         JWEObject jweObject = JWEObject.parse(encryptedStr);
         jweObject.decrypt(new RSADecrypter(jwk));
-        return jweObject.getPayload().toString();
+        return jweObject.getPayload();
     }
 
     public void processRequest(PrintWriter out) {
@@ -54,7 +55,7 @@ public class DecryptServlet extends HttpServlet {
         out.println("<h1>" + message + "</h1>");
         try {
             out.println("<pre>");
-            String sDecrypted = decrypt(sEncKey, sEncMetaData);
+            String sDecrypted = decryptPayload(sEncKey, sEncMetaData).toString();
             out.println("Decrypted:" + sDecrypted);
             out.println("</pre>");
             out.println("<pre>");
@@ -128,8 +129,6 @@ public class DecryptServlet extends HttpServlet {
         response.setHeader("Content-Disposition", "attachment; filename=\"result.txt\"");
         response.setContentType("application/octet-stream");
         response.setCharacterEncoding("UTF-8");
-
-        // String contentType = request.getContentType();
         if (privateKey.length() == 0) {
             logger.log(Level.WARNING, "Missing parameter privateKey");
             response.sendError(422, "Missing parameter privateKey");
@@ -137,13 +136,15 @@ public class DecryptServlet extends HttpServlet {
             logger.log(Level.WARNING, "Missing parameter encodedString");
             response.sendError(422, "Missing parameter encodedString");
         } else {
-            String sDecrypted;
             try {
-                sDecrypted = decrypt(privateKey, encodedString);
+                Payload pDecrypted = decryptPayload(privateKey, encodedString);
                 if (resultAsBase64.equalsIgnoreCase("on")) {
-                    sDecrypted = Base64.getEncoder().encodeToString(sDecrypted.getBytes(StandardCharsets.UTF_8));
+                    response.getWriter().write(Base64.getEncoder().encodeToString(pDecrypted.toBytes()));
                 }
-                response.getWriter().write(sDecrypted);
+                else
+                {
+                    response.getOutputStream().write(pDecrypted.toBytes());
+                }
             } catch (JOSEException e) {
                 logger.log(Level.SEVERE, "Decryption failed, JOSEException",e);
                 response.sendError(500, "Decryption failed, JOSEException - see logs for details");

@@ -17,7 +17,7 @@ class DecryptServletTest {
         assert(sEncKey).contains("RSA-OAEP-256");
         DecryptServlet s = new DecryptServlet();
         try {
-            String sResult = s.decrypt(sEncKey,sEncMetaData);
+            String sResult = s.decryptPayload(sEncKey,sEncMetaData).toString();
             assert(sResult).contains("Thüringer Antragssystem für Verwaltungsleistungen TEST");
             System.out.println("ok: " + sResult);
         } catch (JOSEException | ParseException e) {

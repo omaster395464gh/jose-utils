@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="demo-jose-servlet:war exploded">
-    <output-path>$PROJECT_DIR$/target/demo-jose-servlet-0.10.3-SNAPSHOT</output-path>
+    <output-path>$PROJECT_DIR$/target/demo-jose-servlet-0.10.4-SNAPSHOT</output-path>
     <properties id="maven-jee-properties">
       <options>
         <exploded>true</exploded>
@@ -24,7 +24,7 @@
         </element>
       </element>
       <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/target/demo-jose-servlet-0.10.3-SNAPSHOT/META-INF/MANIFEST.MF" />
+        <element id="file-copy" path="$PROJECT_DIR$/target/demo-jose-servlet-0.10.4-SNAPSHOT/META-INF/MANIFEST.MF" />
       </element>
       <element id="javaee-facet-resources" facet="demo-jose-servlet/web/Web" />
     </root>
