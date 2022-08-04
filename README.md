@@ -54,31 +54,38 @@ declare
   p_wallet_password varchar2(1000);  -- := 'changeit';
   p_url             varchar2(1000)  := 'http(s)://server:port/demo-jose-servlet/decrypt';  
   p_proxy_override  varchar2(1000);  -- := 'http://localhost:8888';
-  l_result          blob;
+  l_result_clob     clob;
+  l_result_blob     blob;
   l_privateKey      clob := '{"alg":"RSA-OAEP-256","d":"pVx...di4","kty":"RSA","n":"5Ew...SvA"}';
   l_encodedString   clob := 'eyJ...h_A';
   l_boundary        varchar2(100) := '472D11119A46B891';
   
-  function get_multipart_as_clob return clob 
+  function get_multipart_as_clob(resultAsBase64 varchar2 := 'off' ) return clob 
   as
     l_crlf          varchar2(2) := CHR(13)||CHR(10);
     l_request_clob  clob;
   begin
-    l_request_clob := '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="privateKey"';
+    l_request_clob := '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="privateKey"; filename="privateKey.txt"';
+    l_request_clob := l_request_clob || l_crlf || 'Content-Type: text/plain';
     l_request_clob := l_request_clob || l_crlf ;
     l_request_clob := l_request_clob || l_crlf || l_privateKey;
-    l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="encodedString"';
+    l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="encodedString"; filename="huge.base64"';
+    l_request_clob := l_request_clob || l_crlf || 'Content-Type: application/octet-stream';
     l_request_clob := l_request_clob || l_crlf || l_crlf ||l_encodedString;
     l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="resultAsBase64"';
-    l_request_clob := l_request_clob || l_crlf || l_crlf || 'off';    -- on / off (default: off)
-    l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||'--';
+    l_request_clob := l_request_clob || l_crlf || l_crlf || resultAsBase64;    -- on / off (default: off)
+    l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||'--' || l_crlf;
     return l_request_clob;
   end;
  
 begin
+    -- select your blob or clob data here
+    -- select blob_data into l_encodedString from my_table;
+
+    dbms_output.put_line ('BLOB Sample');
     apex_web_service.g_request_headers(1).name := 'content-type';
     apex_web_service.g_request_headers(1).value := 'multipart/form-data; boundary='||l_boundary;
-    l_result := apex_web_service.make_rest_request_b(
+    l_result_blob := apex_web_service.make_rest_request_b(
         p_url => p_url
         , p_http_method => 'POST'
         , p_proxy_override => p_proxy_override
@@ -86,10 +93,25 @@ begin
         , p_wallet_path => p_wallet_path
         , p_wallet_pwd => p_wallet_password
     );
-   dbms_output.put_line ('Code : '||apex_web_service.g_status_code);
-   dbms_output.put_line (utl_http.get_detailed_sqlerrm);
-   dbms_output.put_line ('Length: '||dbms_lob.getlength(l_result));
-   dbms_output.put_line ('First 32 KiB: '||utl_raw.cast_to_nvarchar2(dbms_lob.substr(l_result)));
+    dbms_output.put_line ('Code : '||apex_web_service.g_status_code);
+    dbms_output.put_line (utl_http.get_detailed_sqlerrm);
+    dbms_output.put_line ('Length blob: '||dbms_lob.getlength(l_result_blob));
+    -------------
+    dbms_output.put_line ('CLOB Sample');
+    apex_web_service.g_request_headers(1).name := 'content-type';
+    apex_web_service.g_request_headers(1).value := 'multipart/form-data; boundary='||l_boundary;
+    l_result_clob := apex_web_service.make_rest_request(
+        p_url => p_url
+        , p_http_method => 'POST'
+        , p_proxy_override => p_proxy_override
+        , p_body => get_multipart_as_clob( resultAsBase64 => 'on' )
+        , p_wallet_path => p_wallet_path
+        , p_wallet_pwd => p_wallet_password
+    );
+    dbms_output.put_line ('Code : '||apex_web_service.g_status_code);
+    dbms_output.put_line (utl_http.get_detailed_sqlerrm);
+    dbms_output.put_line ('Length clob: '||length(l_result_clob));
+    dbms_output.put_line ('Length blob: '||length(apex_web_service.clobbase642blob(l_result_clob)));
 end;
 /
 ```
