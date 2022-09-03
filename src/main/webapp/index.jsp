@@ -8,7 +8,6 @@
 
 <!doctype html>
 <html lang="en">
-<!-- <html lang="en" data-theme="dark"> -->
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,17 +17,17 @@
 </head>
 <body>
 <main class="container">
-    <hgroup>
+    <header>
         <h1>Decrypt json with Nimbus JOSE+JWT library</h1>
-        <h2>Links</h2>
-    </hgroup>
+        <p>Links</p>
+    </header>
     <ul>
         <li>Demo: <a href="decrypt" data-tooltip="Run decrypt servlet with demo data">decrypt servlet</a></li>
         <li>Monitoring: <a href="monitoring" data-tooltip="Go to JavaMelody Monitoring page">JavaMelody</a></li>
     </ul>
-    <hgroup>
+    <header>
         <h3>Sample calls for RSA-OAEP-256 decryption</h3>
-    </hgroup>
+    </header>
     <!-- Secondary -->
     <details open>
         <summary role="button" class="secondary">Sample 1: Post form to decrypt (multipart/form-data)</summary>
@@ -300,10 +299,10 @@ end;
         </pre>
     </details>
 
-    <hgroup>
+    <header>
         <h2>Debugging</h2>
-        <h3>Add to tomcat conf/logging.properties</h3>
-    </hgroup>
+        <p>Add to tomcat conf/logging.properties</p>
+    </header>
     <pre>org.apache.tomcat.util.http.Parameters.level = ALL
 de.pdv.demo.level = ALL</pre>
 

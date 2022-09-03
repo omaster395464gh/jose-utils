@@ -6,7 +6,7 @@
 
     <groupId>de.pdv.demo</groupId>
     <artifactId>demo-jose-servlet</artifactId>
-    <version>0.10.8-SNAPSHOT</version>
+    <version>0.11.1-SNAPSHOT</version>
     <name>demo-jose-servlet</name>
     <packaging>war</packaging>
 
@@ -76,7 +76,51 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>sonarqube</id>
+            <!-- https://mvnrepository.com/artifact/org.owasp/dependency-check-maven -->
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>7.1.1</version>
+                        <configuration>
+                            <formats>
+                                <format>html</format>
+                                <format>json</format>
+                            </formats>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
@@ -87,21 +131,6 @@
                 <version>3.3.2</version>
             </plugin>
 
-            <!-- https://mvnrepository.com/artifact/org.owasp/dependency-check-maven -->
-            <!--
-            <plugin>
-                <groupId>org.owasp</groupId>
-                <artifactId>dependency-check-maven</artifactId>
-                <version>7.1.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
             <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -136,26 +165,6 @@
                     <outputName>bom</outputName>
                 </configuration>
             </plugin>
-
-            <!-- https://mvnrepository.com/artifact/com.google.cloud.tools/jib-maven-plugin -->
-            <!--
-                <plugin>
-                    <groupId>com.google.cloud.tools</groupId>
-                    <artifactId>jib-maven-plugin</artifactId>
-                    <version>3.2.1</version>
-                    <configuration>
-                        <from>
-                            <image>compile.pdv.lan:8001/product/base/vis-tomcat:9.0</image>
-                        </from>
-                        <to>
-                            <image>demo-jose-servlet</image>
-                        </to>
-                        <container>
-                            <appRoot>/opt/pdv/webapps/demo-jose-servlet</appRoot>
-                        </container>
-                    </configuration>
-                </plugin>
-            -->
         </plugins>
     </build>
     <distributionManagement>

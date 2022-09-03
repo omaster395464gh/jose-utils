@@ -22,6 +22,7 @@ target/
 .idea/**/contentModel.xml
 
 # Sensitive or high-churn files
+.idea/sonarlint/
 .idea/**/dataSources/
 .idea/**/dataSources.ids
 .idea/**/dataSources.local.xml
@@ -43,6 +44,7 @@ target/
 .idea/compiler.xml
 .idea/jarRepositories.xml
 .idea/modules.xml
+.idea/sonar*
 *.iws
 *.iml
 *.ipr
