@@ -129,25 +129,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- https://mvnrepository.com/artifact/org.owasp/dependency-check-maven -->
-                    <plugin>
-                        <groupId>org.owasp</groupId>
-                        <artifactId>dependency-check-maven</artifactId>
-                        <version>7.1.2</version>
-                        <configuration>
-                            <formats>
-                                <format>html</format>
-                                <format>json</format>
-                            </formats>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
