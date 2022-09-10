@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -36,25 +35,25 @@ public class DecryptServlet extends HttpServlet {
     private static final String KEY = labels.getString("data.key");
     private static final String METADATA = labels.getString("data.enc");
 
-    public Payload decryptPayload(@NonNull String keyStr, @NonNull String encryptedStr)  {
+    public Payload decryptPayload(@NonNull String keyStr, @NonNull String encryptedStr) {
         RSAKey jwk;
         try {
             jwk = RSAKey.parse(keyStr);
         } catch (ParseException e) {
-            log.log(Level.SEVERE, "parse RSAKey failed, ParseException",e);
+            log.severe(String.format("parse RSAKey failed, ParseException - %s", e.getMessage()));
             return null;
         }
         JWEObject jweObject;
         try {
             jweObject = JWEObject.parse(encryptedStr);
         } catch (ParseException e) {
-            log.log(Level.SEVERE, "parse JWEObject failed, ParseException",e);
+            log.severe(String.format("parse JWEObject failed, ParseException - %s", e.getMessage()));
             return null;
         }
         try {
             jweObject.decrypt(new RSADecrypter(jwk));
         } catch (JOSEException e) {
-            log.log(Level.SEVERE, "decrypt failed, JOSEException",e);
+            log.severe(String.format("decrypt failed, JOSEException - %s", e.getMessage()));
             return null;
         }
         return jweObject.getPayload();
@@ -81,17 +80,17 @@ public class DecryptServlet extends HttpServlet {
      * @param response servlet response
      */
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) {
-        log.log(Level.INFO, "doGet");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+        log.info("doGet");
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
         try {
             processRequest(response.getWriter());
         } catch (IOException e) {
-            log.severe(String.format("getWriter failed with IOException %s",e.getMessage()));
+            log.severe(String.format("getWriter failed with IOException %s", e.getMessage()));
             return;
         }
-        log.log(Level.INFO, "Process complete");
+        log.info("Process complete");
     }
 
     /**
@@ -101,7 +100,7 @@ public class DecryptServlet extends HttpServlet {
      * @param response servlet response
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)  {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         String privateKey = "";
         String encodedString = "";
         String resultAsBase64 = "";
@@ -118,7 +117,7 @@ public class DecryptServlet extends HttpServlet {
                 }
             }
         } catch (ServletException | IOException e) {
-            log.log(Level.SEVERE, String.format("Exception while getParts %s", e.getMessage()));
+            log.severe(String.format("Exception while getParts %s", e.getMessage()));
         }
 
         response.setHeader("Content-Disposition", "attachment; filename=\"result.txt\"");
@@ -127,12 +126,12 @@ public class DecryptServlet extends HttpServlet {
 
         try {
             if (privateKey.length() == 0) {
-                log.log(Level.WARNING, "Missing parameter privateKey");
+                log.warning("Missing parameter privateKey");
                 response.sendError(422, "Missing parameter privateKey");
                 return;
             }
             if (encodedString.length() == 0) {
-                log.log(Level.WARNING, "Missing parameter encodedString");
+                log.warning("Missing parameter encodedString");
                 response.sendError(422, "Missing parameter encodedString");
                 return;
             }
@@ -147,9 +146,9 @@ public class DecryptServlet extends HttpServlet {
             } else {
                 response.getOutputStream().write(pDecrypted.toBytes());
             }
-            log.log(Level.INFO, "Process complete");
+            log.info("Process complete");
         } catch (IOException e) {
-            log.severe(String.format("doPost failed with IOException %s",e.getMessage()));
+            log.severe(String.format("doPost failed with IOException %s", e.getMessage()));
         }
     }
 
