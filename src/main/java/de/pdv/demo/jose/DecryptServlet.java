@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.Base64;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 
 @Log
 @WebServlet(name = "decrypt", value = "/decrypt")
