@@ -4,6 +4,11 @@
     ResourceBundle labels = ResourceBundle.getBundle("demo");
     String sEncMetaData = labels.getString("data.enc");
     String sEncKey = labels.getString("data.key");
+    String sDataJws = labels.getString("data.jws");
+    String sKeyJws = labels.getString("key.jws");
+    String sJWKS = labels.getString("jwks.pub");
+
+
 %>
 
 <!doctype html>
@@ -309,19 +314,20 @@ end;
         <summary role="button" class="secondary">Sample B1: Post form to verify (multipart/form-data)</summary>
         <form method="post" action="verify" enctype="multipart/form-data">
             <div class="grid">
-                <label for="privateKey2">
-                    privateKey
-                    <textarea type="text" id="privateKey3" name="privateKey" placeholder="enter private key (format: json)" required><%= sEncKey %></textarea>
+                <label for="jwkSet">
+                    jwkSet
+                    <textarea type="text" id="jwkSet" name="jwkSet" placeholder="enter jwk set / public key list (format: json)" required><%= sJWKS %></textarea>
                 </label>
-                <label for="encodedString2">
-                    encodedString
-                    <textarea type="text" id="encodedString3" name="encodedString" placeholder="enter base64 encoded string (charset: utf-8, format: json)" required><%= sEncMetaData %></textarea>
+                <label for="securityEventToken">
+                    securityEventToken
+                    <textarea type="text" id="securityEventToken" name="securityEventToken" placeholder="enter securityEventToken (format: json)" required><%= sDataJws %></textarea>
                 </label>
+                <label for="keyId">
+                    keyId
+                    <textarea type="text" id="keyId" name="keyId" placeholder="enter public keyId" required><%= sKeyJws %></textarea>
+                </label>
+
             </div>
-            <label for="switch2">
-                <input type="checkbox" id="switch3" name="resultAsBase64" role="switch">
-                resultAsBase64 (on/off) - Encode result as base64
-            </label>
             <button type="submit">Submit</button>
         </form>
     </details>

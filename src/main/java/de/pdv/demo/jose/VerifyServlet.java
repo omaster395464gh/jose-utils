@@ -4,6 +4,8 @@ import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.NonNull;
 import lombok.extern.java.Log;
@@ -34,15 +36,15 @@ import static com.nimbusds.jose.JWSAlgorithm.PS512;
         maxRequestSize = 1024 * 1024 * 15)   //  15MB
 public class VerifyServlet extends HttpServlet {
     private static final ResourceBundle labels = ResourceBundle.getBundle("demo");
-    private static final String KEY = labels.getString("data.key");
-    private static final String METADATA = labels.getString("data.enc");
+    private static final String JWS = labels.getString("data.jws");
+    private static final String KEY_JWS = labels.getString("key.jws");
 
 
-    public boolean verifySet(@NonNull InputStream jwkSetInputStream, SignedJWT securityEventToken, String keyId) {
+    public boolean verifySet(@NonNull InputStream jwkSetInputStream, @NonNull SignedJWT securityEventToken, @NonNull String keyId) {
         try {
             JWKSet jwkSet = JWKSet.load(jwkSetInputStream);
             JWK publicKey = jwkSet.getKeyByKeyId(keyId);
-            if (!publicKey.getAlgorithm().toString().equalsIgnoreCase(JWSAlgorithm.PS512.toString()) ) {
+            if (!publicKey.getAlgorithm().toString().equalsIgnoreCase(JWSAlgorithm.PS512.toString())) {
                 log.severe("The key specified for signature verification doesn't use/specify PS512 as algorithm.");
                 return false;
             }
@@ -60,30 +62,29 @@ public class VerifyServlet extends HttpServlet {
         }
     }
 
-    public Payload verifyPayload(@NonNull String keyStr, @NonNull String encryptedStr) {
-        try {
-            JWKSet jwks = JWKSet.load(getClass().getClassLoader().getResourceAsStream("jwks.json"));
-        } catch (ParseException e) {
-            log.severe(String.format("parse JWKSet failed, ParseException - %s", e.getMessage()));
-            return null;
-        } catch (IOException e) {
-            log.severe(String.format("parse JWKSet failed, IOException - %s", e.getMessage()));
-            return null;
-        }
-
-        return null;
-    }
 
     public void processRequest(PrintWriter out) {
         out.println("<html lang=\"en\" data-theme=\"dark\">\n" + "<head>\n" + "    <meta charset=\"utf-8\">\n" + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" + "    <meta name=\"description\" content=\"Servlet demo for verify sets with Nimbus JOSE+JWT library\">\n" + "    <link rel=\"stylesheet\" href=\"webjars/pico/css/pico.min.css\">\n" + "    <title>Verify sets with Nimbus JOSE+JWT library</title>\n" + "</head>\n<body>\n" + "<main class=\"container\">");
         String message = "Verify demo!";
         out.println("<h1>" + message + "</h1>");
         out.println("<pre>");
-        String sDecrypted = verifyPayload(KEY, METADATA).toString();
-        out.println("Decrypted:" + sDecrypted);
-        out.println("</pre>");
-        out.println("<pre>");
-        out.println("Decrypted pretty:" + new JSONObject(sDecrypted).toString(4));
+        try {
+            JWT jwt = JWTParser.parse(JWS);
+            if (jwt instanceof SignedJWT) {
+                SignedJWT jwsObject = (SignedJWT) jwt;
+                InputStream is = getClass().getClassLoader().getResourceAsStream("jwks.json");
+                if (verifySet(is, jwsObject, KEY_JWS)) {
+                    out.println("Verified: TRUE\n");
+                    out.println("Header (pretty):\n" + new JSONObject(jwsObject.getHeader().toJSONObject()).toString(4));
+                    out.println("\nPayload (pretty):\n" + new JSONObject(jwsObject.getPayload().toJSONObject()).toString(4));
+                    out.println("\nSignature:\n" + jwsObject.getSignature().toString());
+                } else
+                    out.println("Verified: FALSE");
+            }
+        } catch (ParseException e) {
+            log.severe(String.format("parse JWT failed, ParseException - %s", e.getMessage()));
+            out.println("Verified: FALSE");
+        }
         out.println("</pre>");
         out.println("</main></body></html>");
     }
@@ -116,54 +117,56 @@ public class VerifyServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
-        String privateKey = "";
-        String encodedString = "";
-        String resultAsBase64 = "";
+        String sEventToken = "";
+        String keyId = "";
+        InputStream jwkSet = null;
         try {
             for (Part part : request.getParts()) {
-                if (part.getName().equalsIgnoreCase("privateKey")) {
-                    privateKey = IOUtils.toString(part.getInputStream(), StandardCharsets.UTF_8);
+                if (part.getName().equalsIgnoreCase("securityEventToken")) {
+                    sEventToken = IOUtils.toString(part.getInputStream(), StandardCharsets.UTF_8);
                 }
-                if (part.getName().equalsIgnoreCase("encodedString")) {
-                    encodedString = IOUtils.toString(part.getInputStream(), StandardCharsets.UTF_8);
+                if (part.getName().equalsIgnoreCase("keyId")) {
+                    keyId = IOUtils.toString(part.getInputStream(), StandardCharsets.UTF_8);
                 }
-                if (part.getName().equalsIgnoreCase("resultAsBase64")) {
-                    resultAsBase64 = IOUtils.toString(part.getInputStream(), StandardCharsets.UTF_8);
+                if (part.getName().equalsIgnoreCase("jwkSet")) {
+                    jwkSet = part.getInputStream();
                 }
+
             }
         } catch (ServletException | IOException e) {
             log.severe(String.format("Exception while getParts %s", e.getMessage()));
         }
-
-        response.setHeader("Content-Disposition", "attachment; filename=\"result.txt\"");
-        response.setContentType("application/octet-stream");
         response.setCharacterEncoding("UTF-8");
+        response.setContentType("");
 
         try {
-            if (privateKey.length() == 0) {
-                log.warning("Missing parameter privateKey");
-                response.sendError(422, "Missing parameter privateKey");
+            if (jwkSet == null) {
+                log.warning("Missing parameter jwkSet");
+                response.sendError(422, "Missing parameter jwkSet");
                 return;
             }
-            if (encodedString.length() == 0) {
-                log.warning("Missing parameter encodedString");
-                response.sendError(422, "Missing parameter encodedString");
+            if (sEventToken.length() == 0) {
+                log.warning("Missing parameter securityEventToken");
+                response.sendError(422, "Missing parameter securityEventToken");
                 return;
             }
-            Payload pDecrypted = verifyPayload(privateKey, encodedString);
-            if (pDecrypted == null) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Decryption failed - see logs for details");
+            if (keyId.length() == 0) {
+                log.warning("Missing parameter keyId");
+                response.sendError(422, "Missing parameter keyId");
                 return;
             }
-            // start processing
-            if (resultAsBase64.equalsIgnoreCase("on")) {
-                response.getWriter().write(Base64.getEncoder().encodeToString(pDecrypted.toBytes()));
-            } else {
-                response.getOutputStream().write(pDecrypted.toBytes());
+            JWT jwt = JWTParser.parse(sEventToken);
+            InputStream is = getClass().getClassLoader().getResourceAsStream("jwks.json");
+            if (jwt instanceof SignedJWT) {
+                SignedJWT jwsObject = (SignedJWT) jwt;
+                if (!verifySet(is, jwsObject, keyId)) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Verify failed - see logs for details");
+                    return;
+                }
             }
             log.info("Process complete");
-        } catch (IOException e) {
-            log.severe(String.format("doPost failed with IOException %s", e.getMessage()));
+        } catch (IOException | ParseException e) {
+            log.severe(String.format("doPost failed with %s", e.getMessage()));
         }
     }
 
