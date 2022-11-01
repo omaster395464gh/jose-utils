@@ -11,26 +11,27 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Servlet demo for decrypt json file with Nimbus JOSE+JWT library">
+    <meta name="description" content="Servlet demo for decrypt json file and verify sets with Nimbus JOSE+JWT library">
     <link rel="stylesheet" href="webjars/pico/css/pico.min.css">
     <title>Decrypt json with Nimbus JOSE+JWT library</title>
 </head>
 <body>
 <main class="container">
     <header>
-        <h1>Decrypt json with Nimbus JOSE+JWT library</h1>
-        <p>Links</p>
+        <h1>Nimbus JOSE+JWT library demos</h1>
+        <h2>Links</h2>
     </header>
     <ul>
-        <li>Demo: <a href="decrypt" data-tooltip="Run decrypt servlet with demo data">decrypt servlet</a></li>
+        <li>Demo 1: <a href="decrypt" data-tooltip="Run decrypt servlet with demo data">decrypt servlet</a> | <a href="#samplesA"  data-tooltip="Decrypt samples">Decrypt samples</a> </li>
+        <li>Demo 2: <a href="verify"  data-tooltip="Run verify servlet with demo data">verify servlet</a>   | <a href="#samplesB"  data-tooltip="Verify samples">Verify samples</a> </li>
         <li>Monitoring: <a href="monitoring" data-tooltip="Go to JavaMelody Monitoring page">JavaMelody</a></li>
     </ul>
     <header>
-        <h3>Sample calls for RSA-OAEP-256 decryption</h3>
+        <h3 id="samplesA">Samples for RSA-OAEP-256 decryption</h3>
     </header>
     <!-- Secondary -->
     <details open>
-        <summary role="button" class="secondary">Sample 1: Post form to decrypt (multipart/form-data)</summary>
+        <summary role="button" class="secondary">Sample A1: Post form to decrypt (multipart/form-data)</summary>
         <form method="post" action="decrypt" enctype="multipart/form-data">
             <div class="grid">
                 <label for="privateKey2">
@@ -50,7 +51,7 @@
         </form>
     </details>
     <details>
-        <summary role="button" class="secondary">Sample 2: Post file to decrypt (multipart/form-data) - max 30 MiB </summary>
+        <summary role="button" class="secondary">Sample A2: Post file to decrypt (multipart/form-data) - max 30 MiB </summary>
         <p>Download <a href="demo/privateKey.txt">privateKey.txt</a> and <a href="demo/encodedString.txt">encodedString.txt</a> </p>
         <form method="post" action="decrypt" enctype="multipart/form-data">
             <div class="grid">
@@ -72,7 +73,7 @@
     </details>
 
     <details>
-        <summary role="button" class="secondary">Sample 3: curl</summary>
+        <summary role="button" class="secondary">Sample A3: curl</summary>
         <p>Download <a href="demo/privateKey.txt">privateKey.txt</a> and <a href="demo/encodedString.txt">encodedString.txt</a> </p>
         <pre>
 -------
@@ -110,7 +111,7 @@ ion #0 to host localhost left intact
     </details>
 
     <details open>
-        <summary role="button" class="secondary">Sample 4: Oracle APEX (any version) decrypt with apex_web_service.make_rest_request</summary>
+        <summary role="button" class="secondary">Sample A4: Oracle APEX (any version) decrypt with apex_web_service.make_rest_request</summary>
         <pre>
 
 set serveroutput on size unlimited define off
@@ -162,7 +163,7 @@ end;
     </details>
 
     <details>
-        <summary role="button" class="secondary">Sample 5: Oracle APEX (20.x+) decrypt with apex_web_service.make_rest_request</summary>
+        <summary role="button" class="secondary">Sample A5: Oracle APEX (20.x+) decrypt with apex_web_service.make_rest_request</summary>
         <pre>
 set serveroutput on size unlimited define off
 declare
@@ -211,7 +212,7 @@ end;
     </details>
 
     <details>
-        <summary role="button" class="secondary">Sample 6: Oracle PL/SQL</summary>
+        <summary role="button" class="secondary">Sample A6: Oracle PL/SQL</summary>
         <pre>
 set serveroutput on size unlimited define off
 declare
@@ -297,6 +298,32 @@ begin
 end;
 /
         </pre>
+    </details>
+
+    <a></a>
+    <header>
+        <h3 id="samplesB">Sample calls for set verify</h3>
+    </header>
+    <!-- Secondary -->
+    <details open>
+        <summary role="button" class="secondary">Sample B1: Post form to verify (multipart/form-data)</summary>
+        <form method="post" action="verify" enctype="multipart/form-data">
+            <div class="grid">
+                <label for="privateKey2">
+                    privateKey
+                    <textarea type="text" id="privateKey3" name="privateKey" placeholder="enter private key (format: json)" required><%= sEncKey %></textarea>
+                </label>
+                <label for="encodedString2">
+                    encodedString
+                    <textarea type="text" id="encodedString3" name="encodedString" placeholder="enter base64 encoded string (charset: utf-8, format: json)" required><%= sEncMetaData %></textarea>
+                </label>
+            </div>
+            <label for="switch2">
+                <input type="checkbox" id="switch3" name="resultAsBase64" role="switch">
+                resultAsBase64 (on/off) - Encode result as base64
+            </label>
+            <button type="submit">Submit</button>
+        </form>
     </details>
 
     <header>
