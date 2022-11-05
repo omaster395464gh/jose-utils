@@ -109,10 +109,14 @@ class VerifyServletTest extends Mockito {
         when(response.getWriter()).thenReturn(printWriter);
         assertNotNull(servlet);
         assertNotNull(response);
-        servlet.handleWarning(response,422,"Warning");
+        servlet.handleWarning(response, 422, "Warning");
         verify(response, atLeastOnce()).sendError(422, "Warning");
-        servlet.handleError(response,422,"Error");
+        servlet.handleError(response, 422, "Error");
         verify(response, atLeastOnce()).sendError(422, "Error");
+
+        when(response.getWriter()).thenThrow(IOException.class);
+        servlet.handleWarning(response, 422, "Warning");
+        servlet.handleError(response, 422, "Error");
     }
 
     @Test
@@ -121,8 +125,10 @@ class VerifyServletTest extends Mockito {
         when(response.getWriter()).thenReturn(printWriter);
         assertNotNull(servlet);
         assertNotNull(response);
-        servlet.processPostForSignedJWT(response,false);
-        servlet.processPostForSignedJWT(response,true);
+        servlet.processPostForSignedJWT(response, false);
+        servlet.processPostForSignedJWT(response, true);
+        when(response.getWriter()).thenThrow(IOException.class);
+        servlet.processPostForSignedJWT(response, true);
     }
 
     @Test
