@@ -120,6 +120,7 @@ class VerifyServletTest extends Mockito {
 
         when(response.getWriter()).thenThrow(IOException.class);
         servlet.handleWarning(response, 422, "Warning");
+        when(response.getWriter()).thenThrow(IOException.class);
         servlet.handleError(response, 422, "Error");
     }
 
