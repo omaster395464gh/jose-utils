@@ -4,19 +4,9 @@ Servlet for decrypt json file and verify sets with Nimbus JOSE+JWT library
 * lots of samples for post form, curl and oracle pl/sql 
   optional output as base64 (UTF-8)
 * Nimbus JOSE+JWT (connect2id) for decryption and set validation
-  https://bitbucket.org/connect2id/nimbus-jose-jwt
-  https://docs.fitko.de/fit-connect/docs/receiving/decrypt/
-  https://docs.fitko.de/fit-connect/docs/getting-started/event-log/set-validation/
 * Uses JavaMelody for monitoring
-  https://github.com/javamelody/javamelody/wiki
 * Uses Pico.css webjar for elegant styles with a minimal css framework
-  https://picocss.com/
 * Use Java 8 LTS (also tested with Java 17 LTS and Java 11 LTS)
-* Demo data for curl / jsp: <br/>
-  [src/main/resources/demo.properties](src/main/resources/demo.properties)<br/>
-  [src/main/resources/jwks.json](src/main/resources/jwks.json)<br/>
-  [src/main/webapp/demo/privateKey.txt](src/main/webapp/demo/privateKey.txt)<br/>
-  [src/main/webapp/demo/encodedString.txt](src/main/webapp/demo/encodedString.txt)<br/>
 
 ## /decrypt servlet parameter
 * String privateKey: Private Key in json-format (RSA-OAEP-256)
@@ -137,7 +127,19 @@ end;
 ### Deploy to tomcat 9.x (IntelliJ / Netbeans)
 Run http://localhost:port/
 
-Example:
+Examples:
 * http://localhost:8080/jose_utils_war_exploded/
 * http://localhost:8080/jose_utils_war_exploded/monitoring
+
+### Useful links
+* https://bitbucket.org/connect2id/nimbus-jose-jwt
+* https://docs.fitko.de/fit-connect/docs/receiving/decrypt/
+* https://docs.fitko.de/fit-connect/docs/getting-started/event-log/set-validation/
+* https://github.com/javamelody/javamelody/wiki
+* https://picocss.com/
+* Demo data for curl / jsp: <br/>
+  [src/main/resources/demo.properties](src/main/resources/demo.properties)<br/>
+  [src/main/resources/jwks.json](src/main/resources/jwks.json)<br/>
+  [src/main/webapp/demo/privateKey.txt](src/main/webapp/demo/privateKey.txt)<br/>
+  [src/main/webapp/demo/encodedString.txt](src/main/webapp/demo/encodedString.txt)<br/>
 
