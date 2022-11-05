@@ -1,6 +1,8 @@
 package de.pdv.demo.jose;
 
-import com.nimbusds.jose.*;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -11,6 +13,7 @@ import lombok.NonNull;
 import lombok.extern.java.Log;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -24,10 +27,8 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
-import java.util.Base64;
+import java.util.Objects;
 import java.util.ResourceBundle;
-
-import static com.nimbusds.jose.JWSAlgorithm.PS512;
 
 @Log
 @WebServlet(name = "verify", value = "/verify")
@@ -39,11 +40,26 @@ public class VerifyServlet extends HttpServlet {
     private static final String JWS = labels.getString("data.jws");
     private static final String KEY_JWS = labels.getString("key.jws");
 
+    private static final String VERIFIED_FALSE = "Verified: FALSE\n";
+    private static final String VERIFIED_TRUE = "Verified: TRUE\n";
+    private static final String VERIFIED_JSON = new JSONStringer()
+            .object()
+            .key("signature")
+            .value("verified")
+            .endObject()
+            .toString();
+
 
     public boolean verifySet(@NonNull InputStream jwkSetInputStream, @NonNull SignedJWT securityEventToken, @NonNull String keyId) {
         try {
             JWKSet jwkSet = JWKSet.load(jwkSetInputStream);
             JWK publicKey = jwkSet.getKeyByKeyId(keyId);
+            if (publicKey == null)
+            {
+                log.severe("The key specified for signature verification does not match any public key.");
+                return false;
+            }
+
             if (!publicKey.getAlgorithm().toString().equalsIgnoreCase(JWSAlgorithm.PS512.toString())) {
                 log.severe("The key specified for signature verification doesn't use/specify PS512 as algorithm.");
                 return false;
@@ -62,31 +78,57 @@ public class VerifyServlet extends HttpServlet {
         }
     }
 
+    public void handleWarning(@NonNull HttpServletResponse response, @NonNull int iHttpErrorCode, @NonNull String sWarning) {
+        try {
+            log.warning(sWarning);
+            response.sendError(iHttpErrorCode, sWarning);
+        } catch (IOException e) {
+            log.severe(String.format("IOException while sendError - %s", e.getMessage()));
+        }
+    }
 
-    public void processRequest(PrintWriter out) {
-        out.println("<html lang=\"en\" data-theme=\"dark\">\n" + "<head>\n" + "    <meta charset=\"utf-8\">\n" + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" + "    <meta name=\"description\" content=\"Servlet demo for verify sets with Nimbus JOSE+JWT library\">\n" + "    <link rel=\"stylesheet\" href=\"webjars/pico/css/pico.min.css\">\n" + "    <title>Verify sets with Nimbus JOSE+JWT library</title>\n" + "</head>\n<body>\n" + "<main class=\"container\">");
+    public void handleError(@NonNull HttpServletResponse response, @NonNull int iHttpErrorCode, @NonNull String sError) {
+        try {
+            log.severe(sError);
+            response.sendError(iHttpErrorCode, sError);
+        } catch (IOException e) {
+            log.severe(String.format("IOException while sendError - %s", e.getMessage()));
+        }
+    }
+
+    public void processRequest(@NonNull PrintWriter out) {
+        out.println("<html lang=\"en\" data-theme=\"dark\">\n" + "<head>\n" + "    <meta charset=\"utf-8\">\n" + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" + "    <meta name=\"description\" content=\"Servlet for verify sets with Nimbus JOSE+JWT library\">\n" + "    <link rel=\"stylesheet\" href=\"webjars/pico/css/pico.min.css\">\n" + "    <title>Verify sets with Nimbus JOSE+JWT library</title>\n" + "</head>\n<body>\n" + "<main class=\"container\">");
         String message = "Verify demo!";
         out.println("<h1>" + message + "</h1>");
         out.println("<pre>");
         try {
             JWT jwt = JWTParser.parse(JWS);
             if (jwt instanceof SignedJWT) {
-                SignedJWT jwsObject = (SignedJWT) jwt;
-                InputStream is = getClass().getClassLoader().getResourceAsStream("jwks.json");
-                if (verifySet(is, jwsObject, KEY_JWS)) {
-                    out.println("Verified: TRUE\n");
-                    out.println("Header (pretty):\n" + new JSONObject(jwsObject.getHeader().toJSONObject()).toString(4));
-                    out.println("\nPayload (pretty):\n" + new JSONObject(jwsObject.getPayload().toJSONObject()).toString(4));
-                    out.println("\nSignature:\n" + jwsObject.getSignature().toString());
-                } else
-                    out.println("Verified: FALSE");
+                processRequestForSignedJWT(out, jwt);
             }
         } catch (ParseException e) {
             log.severe(String.format("parse JWT failed, ParseException - %s", e.getMessage()));
-            out.println("Verified: FALSE");
+            out.println(VERIFIED_FALSE);
         }
         out.println("</pre>");
         out.println("</main></body></html>");
+    }
+
+    public void processRequestForSignedJWT(@NonNull PrintWriter out, @NonNull JWT jwt) {
+        SignedJWT jwsObject = (SignedJWT) jwt;
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("jwks.json")) {
+            if (verifySet(Objects.requireNonNull(is), jwsObject, KEY_JWS)) {
+                out.println(VERIFIED_TRUE);
+                out.println("Header (pretty):\n" + new JSONObject(jwsObject.getHeader().toJSONObject()).toString(4));
+                out.println("\nPayload (pretty):\n" + new JSONObject(jwsObject.getPayload().toJSONObject()).toString(4));
+                out.println("\nSignature:\n" + jwsObject.getSignature().toString());
+            } else {
+                out.println(VERIFIED_FALSE);
+            }
+        } catch (IOException e) {
+            log.severe(String.format("parse JWT failed, IOException - %s", e.getMessage()));
+            out.println(VERIFIED_FALSE);
+        }
     }
 
     /**
@@ -137,47 +179,56 @@ public class VerifyServlet extends HttpServlet {
             log.severe(String.format("Exception while getParts %s", e.getMessage()));
         }
         response.setCharacterEncoding("UTF-8");
-        response.setContentType("");
+        response.setContentType("application/json");
 
         try {
             if (jwkSet == null) {
-                log.warning("Missing parameter jwkSet");
-                response.sendError(422, "Missing parameter jwkSet");
+                handleWarning(response, 422, "Missing parameter jwkSet");
                 return;
             }
             if (sEventToken.length() == 0) {
-                log.warning("Missing parameter securityEventToken");
-                response.sendError(422, "Missing parameter securityEventToken");
+                handleWarning(response, 422, "Missing parameter securityEventToken");
                 return;
             }
             if (keyId.length() == 0) {
-                log.warning("Missing parameter keyId");
-                response.sendError(422, "Missing parameter keyId");
+                handleWarning(response, 422, "Missing parameter keyId");
                 return;
             }
             JWT jwt = JWTParser.parse(sEventToken);
-            InputStream is = getClass().getClassLoader().getResourceAsStream("jwks.json");
             if (jwt instanceof SignedJWT) {
                 SignedJWT jwsObject = (SignedJWT) jwt;
-                if (!verifySet(is, jwsObject, keyId)) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Verify failed - see logs for details");
+                boolean bResult = verifySet(jwkSet, jwsObject, keyId);
+                processPostForSignedJWT(response, bResult);
+                if (!bResult)
                     return;
-                }
             }
             log.info("Process complete");
-        } catch (IOException | ParseException e) {
-            log.severe(String.format("doPost failed with %s", e.getMessage()));
+        } catch (ParseException e) {
+            log.severe(String.format("doPost failed with ParseException %s", e.getMessage()));
+            handleError(response, HttpServletResponse.SC_BAD_REQUEST, "Verification failed");
+        }
+    }
+
+    protected void processPostForSignedJWT(@NonNull HttpServletResponse response, @NonNull boolean bResult) {
+        if (bResult) {
+            try {
+                response.getWriter().println(VERIFIED_JSON);
+            } catch (IOException e) {
+                log.severe(String.format("getWriter failed with IOException %s", e.getMessage()));
+            }
+        } else {
+            handleWarning(response, HttpServletResponse.SC_BAD_REQUEST, "Verification returned false - see logs for details");
         }
     }
 
     /**
-     * Demo servlet for Nimbus JOSE+JWT library
+     * Servlet for Nimbus JOSE+JWT library
      *
      * @return a String containing servlet description
      */
     @Override
     public String getServletInfo() {
-        return "Demo servlet for Nimbus JOSE+JWT library";
+        return "Servlet tools for Nimbus JOSE+JWT library";
     }// </editor-fold>
 
 }

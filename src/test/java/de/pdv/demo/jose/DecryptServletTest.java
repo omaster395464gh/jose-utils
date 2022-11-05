@@ -125,6 +125,6 @@ class DecryptServletTest extends Mockito {
     void getServletInfo() {
         when(servlet.getServletConfig()).thenReturn(servletConfig);
         String s = servlet.getServletInfo();
-        assertEquals("Demo servlet for Nimbus JOSE+JWT library", s);
+        assertEquals("Servlet tools for Nimbus JOSE+JWT library", s);
     }
 }

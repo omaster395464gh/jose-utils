@@ -1,11 +1,12 @@
 # demo-jose-servlet [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=omaster395464gh_demo-jose-servlet&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=omaster395464gh_demo-jose-servlet) [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=omaster395464gh_demo-jose-servlet&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=omaster395464gh_demo-jose-servlet)
-Servlet demo for decrypt json file with Nimbus JOSE+JWT library
+Servlet for decrypt json file and verify sets with Nimbus JOSE+JWT library
 
-* 6 samples for post form, curl and oracle pl/sql 
+* lots of samples for post form, curl and oracle pl/sql 
   optional output as base64 (UTF-8)
-* Nimbus JOSE+JWT (connect2id) for decryption
+* Nimbus JOSE+JWT (connect2id) for decryption and set validation
   https://bitbucket.org/connect2id/nimbus-jose-jwt
   https://docs.fitko.de/fit-connect/docs/receiving/decrypt/
+  https://docs.fitko.de/fit-connect/docs/getting-started/event-log/set-validation/
 * Uses JavaMelody for monitoring
   https://github.com/javamelody/javamelody/wiki
 * Uses Pico.css webjar for elegant styles with a minimal css framework
@@ -13,14 +14,31 @@ Servlet demo for decrypt json file with Nimbus JOSE+JWT library
 * Use Java 8 LTS (also tested with Java 17 LTS and Java 11 LTS)
 * Demo data for curl / jsp: <br/>
   [src/main/resources/demo.properties](src/main/resources/demo.properties)<br/>
+  [src/main/resources/jwks.json](src/main/resources/jwks.json)<br/>
   [src/main/webapp/demo/privateKey.txt](src/main/webapp/demo/privateKey.txt)<br/>
-  [src/main/webapp/demo/encodedString.txt](src/main/webapp/demo/encodedString.txt)
+  [src/main/webapp/demo/encodedString.txt](src/main/webapp/demo/encodedString.txt)<br/>
 
-## Servlet Parameter
-* String privateKey: Private Key in JSON-Format (RSA-OAEP-256)
+## /decrypt servlet parameter
+* String privateKey: Private Key in json-format (RSA-OAEP-256)
 * String encodedString: Base64 encoded data ( maximum: 50 MiB / 30 MiB content / 60 MiB request size )
 * String resultAsBase64: Off / On (Default: Off)
-* Result: decrypted string, optionally encoded as base64 (Charset: UTF-8)
+
+| Result | Description |  Format |
+| ----------- | ----------- |  ----------- |
+| HTTP 200 |decrypted string, optionally encoded as base64 | binary or text with charset UTF-8 |
+| HTTP 422 | missing parameter | HTML |
+| HTTP 400 | verification failed | HTML |
+
+## /verify servlet parameter
+* String jwkSet: public keys in json-format (PS512)
+* String securityEventToken: content to verify ( maximum: 10 MiB content / 15 MiB request size )
+* String keyId: key to choose from public key list (p.e. 32858147-f090-43a9-b2fd-d26ae5b41c03)
+
+| Result | Description |  Format |
+| ----------- | ----------- |  ----------- |
+| HTTP 200 | verification succeed | JSON |
+| HTTP 422 | missing parameter | HTML |
+| HTTP 400 | verification failed | HTML |
 
 ## Run tests
 `mvn test`
@@ -36,10 +54,10 @@ Servlet demo for decrypt json file with Nimbus JOSE+JWT library
 * create github release
 
 ## Installation
-* either build or download release war from https://github.com/omaster395464gh/demo-jose-servlet/packages/1491033
-* rename target/demo-jose-servlet*.war to demo-jose-servlet.war
-* copy demo-jose-servlet.war to tomcat webapps folder
-* open server url http(s)://servername:port/demo-jose-servlet/ and check the servlet samples
+* either build or download release war from https://github.com/omaster395464gh/jose-utils/packages/1491033
+* rename target/jose-utils*.war to jose-utils.war
+* copy jose-utils.war to tomcat webapps folder
+* open server url http(s)://servername:port/jose-utils/ and check the servlet samples
 
 ### Debugging
 Add to Tomcat logging.properties:
@@ -52,7 +70,7 @@ set serveroutput on size unlimited define off
 declare
   p_wallet_path     varchar2(1000);  -- := 'file:?/_wallet/';
   p_wallet_password varchar2(1000);  -- := 'changeit';
-  p_url             varchar2(1000)  := 'http(s)://server:port/demo-jose-servlet/decrypt';  
+  p_url             varchar2(1000)  := 'http(s)://server:port/jose-utils/decrypt';  
   p_proxy_override  varchar2(1000);  -- := 'http://localhost:8888';
   l_result_clob     clob;
   l_result_blob     blob;
@@ -120,6 +138,6 @@ end;
 Run http://localhost:port/
 
 Example:
-* http://localhost:8080/demo_jose_servlet_war_exploded/
-* http://localhost:8080/demo_jose_servlet_war_exploded/monitoring
+* http://localhost:8080/jose_utils_war_exploded/
+* http://localhost:8080/jose_utils_war_exploded/monitoring
 

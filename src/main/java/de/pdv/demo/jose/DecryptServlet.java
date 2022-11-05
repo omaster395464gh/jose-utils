@@ -59,7 +59,7 @@ public class DecryptServlet extends HttpServlet {
     }
 
     public void processRequest(PrintWriter out) {
-        out.println("<html lang=\"en\" data-theme=\"dark\">\n" + "<head>\n" + "    <meta charset=\"utf-8\">\n" + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" + "    <meta name=\"description\" content=\"Servlet demo for decrypt json file with Nimbus JOSE+JWT library\">\n" + "    <link rel=\"stylesheet\" href=\"webjars/pico/css/pico.min.css\">\n" + "    <title>Decrypt json with Nimbus JOSE+JWT library</title>\n" + "</head>\n<body>\n" + "<main class=\"container\">");
+        out.println("<html lang=\"en\" data-theme=\"dark\">\n" + "<head>\n" + "    <meta charset=\"utf-8\">\n" + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" + "    <meta name=\"description\" content=\"Servlet for decrypt json file with Nimbus JOSE+JWT library\">\n" + "    <link rel=\"stylesheet\" href=\"webjars/pico/css/pico.min.css\">\n" + "    <title>Decrypt json with Nimbus JOSE+JWT library</title>\n" + "</head>\n<body>\n" + "<main class=\"container\">");
         String message = "Decrypt demo!";
         out.println("<h1>" + message + "</h1>");
         out.println("<pre>");
@@ -152,13 +152,13 @@ public class DecryptServlet extends HttpServlet {
     }
 
     /**
-     * Demo servlet for Nimbus JOSE+JWT library
+     * Servlet for Nimbus JOSE+JWT library
      *
      * @return a String containing servlet description
      */
     @Override
     public String getServletInfo() {
-        return "Demo servlet for Nimbus JOSE+JWT library";
+        return "Servlet tools for Nimbus JOSE+JWT library";
     }// </editor-fold>
 
 }

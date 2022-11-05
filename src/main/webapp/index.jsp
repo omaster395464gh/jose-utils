@@ -27,8 +27,8 @@
         <h2>Links</h2>
     </header>
     <ul>
-        <li>Demo 1: <a href="decrypt" data-tooltip="Run decrypt servlet with demo data">decrypt servlet</a> | <a href="#samplesA"  data-tooltip="Decrypt samples">Decrypt samples</a> </li>
-        <li>Demo 2: <a href="verify"  data-tooltip="Run verify servlet with demo data">verify servlet</a>   | <a href="#samplesB"  data-tooltip="Verify samples">Verify samples</a> </li>
+        <li><a href="decrypt" data-tooltip="Run decrypt servlet with demo data">decrypt servlet</a> | <a href="#samplesA"  data-tooltip="Decrypt samples">Decrypt samples</a> </li>
+        <li><a href="verify"  data-tooltip="Run verify servlet with demo data">verify servlet</a>   | <a href="#samplesB"  data-tooltip="Verify samples">Verify samples</a> </li>
         <li>Monitoring: <a href="monitoring" data-tooltip="Go to JavaMelody Monitoring page">JavaMelody</a></li>
     </ul>
     <header>
