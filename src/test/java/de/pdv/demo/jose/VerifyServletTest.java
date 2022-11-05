@@ -77,7 +77,7 @@ class VerifyServletTest extends Mockito {
     }
 
     @Test
-    void verifySetFailure() throws ParseException {
+    void verifySetFailure() throws ParseException, IOException {
         when(servlet.getServletConfig()).thenReturn(servletConfig);
         assertNotNull(servlet);
         ResourceBundle labels = ResourceBundle.getBundle("demo");
@@ -89,13 +89,40 @@ class VerifyServletTest extends Mockito {
         JWT jwt = JWTParser.parse(sJWS);
         assert (jwt instanceof SignedJWT);
         SignedJWT jwsObject = (SignedJWT) jwt;
-        InputStream is = getClass().getClassLoader().getResourceAsStream("jwks.json");
-        assertNotNull(is);
-        InputStream isFail = new ByteArrayInputStream(labels.getString("jwks.pub_fail").getBytes());
-        assertNotNull(isFail);
-        assertFalse(servlet.verifySet(is, jwsObject, sKeyId), "verify succeed but should fail because if wrong JWS");
-        assertFalse(servlet.verifySet(is, jwsObject, "wrongKey"), "verify succeed but should fail because of wrong key");
-        assertFalse(servlet.verifySet(isFail, jwsObject, sKeyId), "verify succeed but should fail because of wrong key");
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("jwks.json")) {
+            assertNotNull(is);
+            assertFalse(servlet.verifySet(is, jwsObject, "wrongKey"), "verify succeed but should fail because of wrong key");
+        }
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("jwks.json")) {
+            assertNotNull(is);
+            assertFalse(servlet.verifySet(is, jwsObject, sKeyId), "verify succeed but should fail because if wrong JWS");
+        }
+        try (InputStream is = new ByteArrayInputStream(labels.getString("jwks.pub_fail").getBytes())) {
+            assertNotNull(is);
+            assertFalse(servlet.verifySet(is, jwsObject, sKeyId), "verify succeed but should fail because of wrong algorithm");
+        }
+    }
+
+    @Test
+    void testHandlers() throws IOException {
+        when(servlet.getServletConfig()).thenReturn(servletConfig);
+        when(response.getWriter()).thenReturn(printWriter);
+        assertNotNull(servlet);
+        assertNotNull(response);
+        servlet.handleWarning(response,422,"Warning");
+        verify(response, atLeastOnce()).sendError(422, "Warning");
+        servlet.handleError(response,422,"Error");
+        verify(response, atLeastOnce()).sendError(422, "Error");
+    }
+
+    @Test
+    void testProcessPostForSignedJWT() throws IOException {
+        when(servlet.getServletConfig()).thenReturn(servletConfig);
+        when(response.getWriter()).thenReturn(printWriter);
+        assertNotNull(servlet);
+        assertNotNull(response);
+        servlet.processPostForSignedJWT(response,false);
+        servlet.processPostForSignedJWT(response,true);
     }
 
     @Test
