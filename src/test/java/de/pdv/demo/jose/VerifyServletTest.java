@@ -108,18 +108,24 @@ class VerifyServletTest extends Mockito {
     }
 
     @Test
-    void testHandlers() throws IOException {
+    void testHandleWarning() throws IOException {
         when(servlet.getServletConfig()).thenReturn(servletConfig);
         when(response.getWriter()).thenReturn(printWriter);
         assertNotNull(servlet);
         assertNotNull(response);
         servlet.handleWarning(response, 422, "Warning");
         verify(response, atLeastOnce()).sendError(422, "Warning");
-        servlet.handleError(response, 422, "Error");
-        verify(response, atLeastOnce()).sendError(422, "Error");
-
         when(response.getWriter()).thenThrow(IOException.class);
         servlet.handleWarning(response, 422, "Warning");
+    }
+    @Test
+    void testHandleError() throws IOException {
+        when(servlet.getServletConfig()).thenReturn(servletConfig);
+        when(response.getWriter()).thenReturn(printWriter);
+        assertNotNull(servlet);
+        assertNotNull(response);
+        servlet.handleError(response, 422, "Error");
+        verify(response, atLeastOnce()).sendError(422, "Error");
         when(response.getWriter()).thenThrow(IOException.class);
         servlet.handleError(response, 422, "Error");
     }
