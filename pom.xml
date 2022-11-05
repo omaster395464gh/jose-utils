@@ -6,8 +6,8 @@
 
     <groupId>de.pdv.demo</groupId>
     <artifactId>demo-jose-servlet</artifactId>
-    <version>0.10.9-SNAPSHOT</version>
-    <name>demo-jose-servlet</name>
+    <version>0.11.1-SNAPSHOT</version>
+    <name>jose-utils</name>
     <packaging>war</packaging>
 
     <properties>
@@ -183,7 +183,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/omaster395464gh/demo-jose-servlet</url>
+            <url>https://maven.pkg.github.com/omaster395464gh/jose-utils</url>
         </repository>
     </distributionManagement>
 </project>

@@ -113,9 +113,6 @@ class DecryptServletTest extends Mockito {
         doThrow(new IOException()).when(response).sendError(422, MISSING_KEY);
         servlet.doPost(request, response);
 
-        //doThrow(new IOException()).when(request).getParts();
-        //servlet.doPost(request, response);
-
         when(request.getParts()).thenReturn(new ArrayList<>());
         servlet.doPost(request, response);
 
@@ -125,6 +122,6 @@ class DecryptServletTest extends Mockito {
     void getServletInfo() {
         when(servlet.getServletConfig()).thenReturn(servletConfig);
         String s = servlet.getServletInfo();
-        assertEquals("Demo servlet for Nimbus JOSE+JWT library", s);
+        assertEquals("Servlet tools for Nimbus JOSE+JWT library", s);
     }
 }
