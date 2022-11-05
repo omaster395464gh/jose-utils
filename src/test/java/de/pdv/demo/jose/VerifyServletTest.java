@@ -101,6 +101,10 @@ class VerifyServletTest extends Mockito {
             assertNotNull(is);
             assertFalse(servlet.verifySet(is, jwsObject, sKeyId), "verify succeed but should fail because of wrong algorithm");
         }
+        try (InputStream is = new ByteArrayInputStream(("not json! wrong public key").getBytes())) {
+            assertNotNull(is);
+            assertFalse(servlet.verifySet(is, jwsObject, sKeyId), "verify succeed but should fail because of wrong public key format");
+        }
     }
 
     @Test
