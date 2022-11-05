@@ -1,4 +1,4 @@
-# demo-jose-servlet [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=omaster395464gh_demo-jose-servlet&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=omaster395464gh_demo-jose-servlet) [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=omaster395464gh_demo-jose-servlet&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=omaster395464gh_demo-jose-servlet)
+# jose-utils [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=omaster395464gh_demo-jose-servlet&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=omaster395464gh_demo-jose-servlet) [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=omaster395464gh_demo-jose-servlet&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=omaster395464gh_demo-jose-servlet)
 Servlet for decrypt json file and verify sets with Nimbus JOSE+JWT library
 
 * lots of samples for post form, curl and oracle pl/sql 
