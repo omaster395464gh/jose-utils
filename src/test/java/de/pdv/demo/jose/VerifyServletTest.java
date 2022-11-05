@@ -1,7 +1,8 @@
 package de.pdv.demo.jose;
 
-import com.nimbusds.jose.JWSObject;
-import com.nimbusds.jwt.*;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.java.Log;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,11 +12,15 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +32,7 @@ class VerifyServletTest extends Mockito {
     static final String KEY_JWS = "key.jws";
     static final String JWS = "data.jws";
     static final String JWS_FAIL = "data.jws_fail";
-    static final String MISSING_KEY = "Missing parameter privateKey";
+    static final String MISSING_KEY = "Missing parameter jwkSet";
     @Spy
     private VerifyServlet servlet;
     @Mock
@@ -63,14 +68,12 @@ class VerifyServletTest extends Mockito {
         assertNotNull(sJWS);
         JWT jwt = JWTParser.parse(sJWS);
         assert (jwt instanceof SignedJWT);
-        if (jwt instanceof SignedJWT) {
-            SignedJWT jwsObject = (SignedJWT) jwt;
-            InputStream is = getClass().getClassLoader().getResourceAsStream("jwks.json");
-            assertNotNull(is);
-            boolean bResult = servlet.verifySet(is, jwsObject, sKeyId);
-            assertTrue(bResult, "verify failed");
-            log.info("verify ok!");
-        }
+        SignedJWT jwsObject = (SignedJWT) jwt;
+        InputStream is = getClass().getClassLoader().getResourceAsStream("jwks.json");
+        assertNotNull(is);
+        boolean bResult = servlet.verifySet(is, jwsObject, sKeyId);
+        assertTrue(bResult, "verify failed");
+        log.info("verify ok!");
     }
 
     @Test
@@ -85,13 +88,41 @@ class VerifyServletTest extends Mockito {
         assertNotNull(sJWS);
         JWT jwt = JWTParser.parse(sJWS);
         assert (jwt instanceof SignedJWT);
-        if (jwt instanceof SignedJWT) {
-            SignedJWT jwsObject = (SignedJWT) jwt;
-            InputStream is = getClass().getClassLoader().getResourceAsStream("jwks.json");
-            assertNotNull(is);
-            boolean bResult = servlet.verifySet(is, jwsObject, sKeyId);
-            assertFalse(bResult, "verify succeed but should fail");
-        }
+        SignedJWT jwsObject = (SignedJWT) jwt;
+        InputStream is = getClass().getClassLoader().getResourceAsStream("jwks.json");
+        assertNotNull(is);
+        InputStream isFail = new ByteArrayInputStream(labels.getString("jwks.pub_fail").getBytes());
+        assertNotNull(isFail);
+        assertFalse(servlet.verifySet(is, jwsObject, sKeyId), "verify succeed but should fail because if wrong JWS");
+        assertFalse(servlet.verifySet(is, jwsObject, "wrongKey"), "verify succeed but should fail because of wrong key");
+        assertFalse(servlet.verifySet(isFail, jwsObject, sKeyId), "verify succeed but should fail because of wrong key");
+    }
+
+    @Test
+    void doGet() throws IOException {
+        when(servlet.getServletConfig()).thenReturn(servletConfig);
+        when(response.getWriter()).thenReturn(printWriter);
+        log.info("demo jose doGet test, preparing...");
+        servlet.doGet(request, response);
+        verify(printWriter, atLeastOnce()).println("<pre>");
+        when(response.getWriter()).thenThrow(IOException.class);
+        servlet.doGet(request, response);
+    }
+
+    @Test
+    void doPost() throws IOException, ServletException {
+        when(servlet.getServletConfig()).thenReturn(servletConfig);
+        when(response.getWriter()).thenReturn(printWriter);
+        assertNotNull(servlet);
+        log.info("demo jose doPost test, preparing...");
+        ResourceBundle labels = ResourceBundle.getBundle("demo");
+        assertNotNull(labels);
+        servlet.doPost(request, response);
+        verify(response, atLeastOnce()).sendError(422, MISSING_KEY);
+        doThrow(new IOException()).when(response).sendError(422, MISSING_KEY);
+        servlet.doPost(request, response);
+        when(request.getParts()).thenReturn(new ArrayList<>());
+        servlet.doPost(request, response);
     }
 
     @Test
