@@ -54,7 +54,7 @@ Servlet for decrypt json file and verify sets with Nimbus JOSE+JWT library
 * create github release
 
 ## Installation
-* either build or download release war from https://github.com/omaster395464gh/jose-utils/packages/1491033
+* either build or download release war from https://github.com/omaster395464gh/jose-utils/packages/1703886
 * rename target/jose-utils*.war to jose-utils.war
 * copy jose-utils.war to tomcat webapps folder
 * open server url http(s)://servername:port/jose-utils/ and check the servlet samples
