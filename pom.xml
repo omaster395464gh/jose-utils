@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.pdv.demo</groupId>
-    <artifactId>demo-jose-servlet</artifactId>
-    <version>0.11.1-SNAPSHOT</version>
+    <artifactId>jose-utils</artifactId>
+    <version>0.11.2-SNAPSHOT</version>
     <name>jose-utils</name>
     <packaging>war</packaging>
 
