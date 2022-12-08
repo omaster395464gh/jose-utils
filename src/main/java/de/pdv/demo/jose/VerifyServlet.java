@@ -100,6 +100,7 @@ public class VerifyServlet extends HttpServlet {
         out.println("<html lang=\"en\" data-theme=\"dark\">\n" + "<head>\n" + "    <meta charset=\"utf-8\">\n" + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" + "    <meta name=\"description\" content=\"Servlet for verify sets with Nimbus JOSE+JWT library\">\n" + "    <link rel=\"stylesheet\" href=\"webjars/pico/css/pico.min.css\">\n" + "    <title>Verify sets with Nimbus JOSE+JWT library</title>\n" + "</head>\n<body>\n" + "<main class=\"container\">");
         String message = "Verify demo!";
         out.println("<h1>" + message + "</h1>");
+        out.println("<a href=\"index.jsp\">Back</a>");
         out.println("<pre>");
         try {
             JWT jwt = JWTParser.parse(JWS);
