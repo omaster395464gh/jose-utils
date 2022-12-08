@@ -11,6 +11,7 @@ import com.nimbusds.jwt.SignedJWT;
 import lombok.NonNull;
 import lombok.extern.java.Log;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -115,6 +116,8 @@ public class SignServlet extends HttpServlet {
             out.println("</main></body></html>");
         } catch (IOException e) {
             log.severe(String.format("getWriter failed, IOException - %s", e.getMessage()));
+        } catch (JSONException e) {
+            log.severe(String.format("pretty print of JSONObject failed, JSONException - %s", e.getMessage()));
         }
         log.info("Process complete");
     }
