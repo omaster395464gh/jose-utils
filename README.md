@@ -1,10 +1,11 @@
 # jose-utils [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=omaster395464gh_demo-jose-servlet&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=omaster395464gh_demo-jose-servlet) [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=omaster395464gh_demo-jose-servlet&metric=sqale_index)](https://sonarcloud.io/summary/new_code?id=omaster395464gh_demo-jose-servlet)
 Servlets for decrypt json file and verify sets with Nimbus JOSE+JWT library
 
-| Servlet                     | Description         |
-|-----------------------------|------------|
-| [/decrypt](docs/decrypt.md) |Decrypt provided data up to 30 MiB content|
-| [/verify](docs/verify.md)   |Verify a set|
+| Servlet                     | Description                                |
+|-----------------------------|--------------------------------------------|
+| [/decrypt](docs/decrypt.md) | Decrypt provided data up to 30 MiB content |
+| [/verify](docs/verify.md)   | Verify a set (up to 10 MiB)                              |
+| [/sign](docs/sign.md)       | Sign a set (up to 10 MiB)                  |
 
 * lots of samples for post form, curl and oracle pl/sql 
   optional output as base64 (UTF-8)
@@ -49,6 +50,7 @@ Examples:
 * https://bitbucket.org/connect2id/nimbus-jose-jwt
 * https://docs.fitko.de/fit-connect/docs/receiving/decrypt/
 * https://docs.fitko.de/fit-connect/docs/getting-started/event-log/set-validation/
+* https://git.fitko.de/fit-connect/examples/-/blob/main/java/crypto/src/main/java/GenerateSignedToken.java
 * https://github.com/javamelody/javamelody/wiki
 * https://picocss.com/
 * Demo data for curl / jsp: <br/>
