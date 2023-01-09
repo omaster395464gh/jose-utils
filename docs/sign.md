@@ -1,4 +1,4 @@
-# /verify servlet 
+# /sign servlet 
 [Home](../README.md)
 ## Servlet parameter
 * String jwkSet: set of private keys in json-format (PS512)

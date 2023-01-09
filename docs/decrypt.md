@@ -1,4 +1,4 @@
-# /verify servlet
+# /decrypt servlet
 [Home](../README.md)
 
 ## Servlet parameter
