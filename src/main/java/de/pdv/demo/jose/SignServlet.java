@@ -58,10 +58,8 @@ public class SignServlet extends HandlerServlet {
             } else {
                 log.warning("parse RSAKey for signing failed, missing key in getKeyByKeyId");
             }
-        } catch (IOException | ParseException e) {
-            log.severe(String.format("parse RSAKey for signing failed, ParseException - %s", e.getMessage()));
-        } catch (JOSEException e) {
-            log.severe(String.format("parse RSAKey for signing failed, JOSEException - %s", e.getMessage()));
+        } catch (IOException | ParseException | JOSEException e) {
+            log.severe(String.format("parse RSAKey for signing failed, %s - %s", e.getClass().getName(), e.getMessage()));
         }
         return null;
     }

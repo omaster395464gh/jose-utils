@@ -125,16 +125,16 @@ public class DecryptServlet extends HandlerServlet {
 
         try {
             if (privateKey.length() == 0) {
-                handleWarning(response,422,"Missing parameter privateKey");
+                handleWarning(response, 422, "Missing parameter privateKey");
                 return;
             }
             if (encodedString.length() == 0) {
-                handleWarning(response,422,"Missing parameter encodedString");
+                handleWarning(response, 422, "Missing parameter encodedString");
                 return;
             }
             Payload pDecrypted = decryptPayload(privateKey, encodedString);
             if (pDecrypted == null) {
-                handleError(response,HttpServletResponse.SC_BAD_REQUEST,"Decryption failed - see logs for details");
+                handleError(response, HttpServletResponse.SC_BAD_REQUEST, "Decryption failed - see logs for details");
                 return;
             }
             // start processing

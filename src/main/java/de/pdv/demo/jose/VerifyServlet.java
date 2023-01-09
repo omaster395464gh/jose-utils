@@ -42,20 +42,14 @@ public class VerifyServlet extends HandlerServlet {
 
     private static final String VERIFIED_FALSE = "Verified: FALSE\n";
     private static final String VERIFIED_TRUE = "Verified: TRUE\n";
-    private static final String VERIFIED_JSON = new JSONStringer()
-            .object()
-            .key("signature")
-            .value("verified")
-            .endObject()
-            .toString();
+    private static final String VERIFIED_JSON = new JSONStringer().object().key("signature").value("verified").endObject().toString();
 
 
     public boolean verifySet(@NonNull InputStream jwkSetInputStream, @NonNull SignedJWT securityEventToken, @NonNull String keyId) {
         try {
             JWKSet jwkSet = JWKSet.load(jwkSetInputStream);
             JWK publicKey = jwkSet.getKeyByKeyId(keyId);
-            if (publicKey == null)
-            {
+            if (publicKey == null) {
                 log.severe("The key specified for signature verification does not match any public key.");
                 return false;
             }
@@ -66,14 +60,8 @@ public class VerifyServlet extends HandlerServlet {
             }
             JWSVerifier jwsVerifier = new RSASSAVerifier(publicKey.toRSAKey());
             return securityEventToken.verify(jwsVerifier);
-        } catch (ParseException e) {
-            log.severe(String.format("verify JWT failed, ParseException - %s", e.getMessage()));
-            return false;
-        } catch (IOException e) {
-            log.severe(String.format("verify JWT failed, IOException - %s", e.getMessage()));
-            return false;
-        } catch (JOSEException e) {
-            log.severe(String.format("verify JWT failed, JOSEException - %s", e.getMessage()));
+        } catch (ParseException | IOException | JOSEException e) {
+            log.severe(String.format("verify JWT failed, %s - %s", e.getClass().getName(), e.getMessage()));
             return false;
         }
     }
@@ -182,8 +170,7 @@ public class VerifyServlet extends HandlerServlet {
                 SignedJWT jwsObject = (SignedJWT) jwt;
                 boolean bResult = verifySet(jwkSet, jwsObject, keyId);
                 processPostForSignedJWT(response, bResult);
-                if (!bResult)
-                    return;
+                if (!bResult) return;
             }
             log.info("Process complete");
         } catch (ParseException e) {

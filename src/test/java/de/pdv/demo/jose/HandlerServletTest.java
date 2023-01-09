@@ -60,6 +60,7 @@ class HandlerServletTest extends Mockito {
         when(response.getWriter()).thenThrow(IOException.class);
         servlet.handleWarning(response, 422, "Warning");
     }
+
     @Test
     void testHandleError() throws IOException {
         when(servlet.getServletConfig()).thenReturn(servletConfig);

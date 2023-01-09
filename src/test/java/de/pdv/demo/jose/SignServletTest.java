@@ -25,11 +25,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @Log
 class SignServletTest extends Mockito {
 
+    static final String MISSING_KEY = "Missing parameter jwkSet";
     private static final ResourceBundle labels = ResourceBundle.getBundle("demo");
     private static final String SIGN_HEADER = labels.getString("sign.header");
     private static final String SIGN_PAYLOAD = labels.getString("sign.payload");
-
-    static final String MISSING_KEY = "Missing parameter jwkSet";
     @Spy
     private SignServlet servlet;
     @Mock
@@ -61,7 +60,7 @@ class SignServletTest extends Mockito {
         assertNotNull(SIGN_PAYLOAD);
         InputStream is = getClass().getClassLoader().getResourceAsStream("jwks2.json");
         assertNotNull(is);
-        SignedJWT mySignedJWT = servlet.signSet(is,SIGN_HEADER,SIGN_PAYLOAD);
+        SignedJWT mySignedJWT = servlet.signSet(is, SIGN_HEADER, SIGN_PAYLOAD);
         assertNotNull(mySignedJWT);
         log.info("sign ok!");
     }
@@ -75,13 +74,12 @@ class SignServletTest extends Mockito {
         assertNotNull(SIGN_PAYLOAD);
         InputStream is = getClass().getClassLoader().getResourceAsStream("jwks.json");
         assertNotNull(is);
-        SignedJWT mySignedJWT = servlet.signSet(is,SIGN_HEADER,SIGN_PAYLOAD);
-        assertNull(mySignedJWT,"sign succeed but should fail because of wrong jwks");
+        SignedJWT mySignedJWT = servlet.signSet(is, SIGN_HEADER, SIGN_PAYLOAD);
+        assertNull(mySignedJWT, "sign succeed but should fail because of wrong jwks");
 
         InputStream is2 = getClass().getClassLoader().getResourceAsStream("jwks.json");
-        mySignedJWT = servlet.signSet(is2,"a","b");
-        assertNull(mySignedJWT,"sign succeed but should fail because of wrong jwks");
-
+        mySignedJWT = servlet.signSet(is2, "a", "b");
+        assertNull(mySignedJWT, "sign succeed but should fail because of wrong jwks");
 
     }
 
