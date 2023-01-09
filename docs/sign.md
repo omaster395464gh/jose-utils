@@ -1,31 +1,31 @@
-# /decrypt servlet
+# /sign servlet 
 [Home](../README.md)
-
 ## Servlet parameter
-* String privateKey: Private Key in json-format (RSA-OAEP-256)
-* String encodedString: Base64 encoded data ( maximum: 50 MiB / 30 MiB content / 60 MiB request size )
-* String resultAsBase64: Off / On (Default: Off)
+* String jwkSet: set of private keys in json-format (PS512)
+* String header: header to sign 
+* String payload: claimset to sign ( maximum: 10 MiB content / 15 MiB request size )
 
-| Result | Description |  Format |
-| ----------- | ----------- |  ----------- |
-| HTTP 200 |decrypted string, optionally encoded as base64 | binary or text with charset UTF-8 |
-| HTTP 422 | missing parameter | HTML |
-| HTTP 400 | verification failed | HTML |
+| Result | Description          |  Format |
+| ----------- |----------------------|  ----------- |
+| HTTP 200 | serialized jwt token | JSON |
+| HTTP 422 | missing parameter    | HTML |
+| HTTP 400 | sign failed          | HTML |
 
 ## Usage: Oracle PL/SQL
 ``` sql
+set serveroutput on
 declare
   p_wallet_path     varchar2(1000);  -- := 'file:?/_wallet/';
   p_wallet_password varchar2(1000);  -- := 'changeit';
-  p_url             varchar2(1000)  := 'http(s)://server:port/jose-utils/verify';
+  p_url             varchar2(1000)  := 'http(s)://server:port/jose-utils/sign';
   p_proxy_override  varchar2(1000);  -- := 'http://localhost:8888';
   l_result          clob;
-  l_jwkSet          clob := '{"keys": [{"alg": "PS512","e": "AQAB","key_ops": ["verify"],"kid": "32858147...",...}]}';
-  l_securityEventToken clob := 'eyJra...Kuks';
-  l_keyId           varchar2(200) := '32858147...';
-  l_boundary        varchar2(100) := '572D11119A46B891'; -- random value
+  l_jwkSet          clob := '{"keys": [{"alg": "PS512","d": "Xm0Ua2QK...ZA"}]}';
+  l_header          clob := '{"alg": "PS512","typ": "secevent+jwt","kid": "6508dbcd-ab3b-4edb-a42b-37bc69f38fed"}';
+  l_payload         clob := '{"iss": "https://api.fitko.de/fit-connect/","sub": "submission:f65feab2-4883-4dff-85fb-169448545d9f","txn": "case:f73d30c6-8894-4444-8687-00ae756fea90","iat": 1670537629,"jti": "52121063-9372-4eb6-a43f-6ba3e7b8c96f","events": {"https://schema.fitko.de/fit-connect/events/accept-submission": {}}}';
+  l_boundary        varchar2(100) := '572D11119A46B891';
 
-  function get_multipart_as_clob(resultAsBase64 varchar2 := 'off' ) return clob
+  function get_multipart_as_clob return clob
   as
     l_crlf          varchar2(2) := CHR(13)||CHR(10);
     l_request_clob  clob;
@@ -33,11 +33,11 @@ declare
     l_request_clob := '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="jwkSet"; filename="jwkSet.json"';
     l_request_clob := l_request_clob || l_crlf || 'Content-Type: application/octet-stream';
     l_request_clob := l_request_clob || l_crlf || l_crlf || l_jwkSet;
-    l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="securityEventToken"; filename="securityEventToken.bin"';
+    l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="header"; filename="header.txt"';
     l_request_clob := l_request_clob || l_crlf || 'Content-Type: application/octet-stream';
-    l_request_clob := l_request_clob || l_crlf || l_crlf ||l_securityEventToken;
-    l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="keyId"; filename="keyId.txt"';
-    l_request_clob := l_request_clob || l_crlf || l_crlf || l_keyId;
+    l_request_clob := l_request_clob || l_crlf || l_crlf ||l_header;
+    l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||l_crlf||'Content-Disposition: form-data; name="payload"; filename="payload.txt"';
+    l_request_clob := l_request_clob || l_crlf || l_crlf || l_payload;
     l_request_clob := l_request_clob || l_crlf || '--'||l_boundary||'--' || l_crlf;
     return l_request_clob;
   end;

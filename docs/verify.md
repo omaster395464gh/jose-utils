@@ -5,11 +5,11 @@
 * String securityEventToken: content to verify ( maximum: 10 MiB content / 15 MiB request size )
 * String keyId: key to choose from public key list (p.e. 32858147-f090-43a9-b2fd-d26ae5b41c03)
 
-| Result | Description |  Format |
-| ----------- | ----------- |  ----------- |
-| HTTP 200 | verification succeed | JSON |
-| HTTP 422 | missing parameter | HTML |
-| HTTP 400 | verification failed | HTML |
+| Result   | Description | Format |
+|----------| ----------- |--------|
+| HTTP 200 | verification succeed | JSON   |
+| HTTP 422 | missing parameter | HTML   |
+| HTTP 400 | verification failed | HTML   |
 
 ## Usage: Oracle PL/SQL
 ``` sql

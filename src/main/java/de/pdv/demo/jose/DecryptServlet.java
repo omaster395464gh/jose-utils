@@ -13,7 +13,6 @@ import org.json.JSONObject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
@@ -29,7 +28,7 @@ import java.util.ResourceBundle;
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, //   2MB
         maxFileSize = 1024 * 1024 * 50,      //  50MB
         maxRequestSize = 1024 * 1024 * 60)   //  60MB
-public class DecryptServlet extends HttpServlet {
+public class DecryptServlet extends HandlerServlet {
     private static final ResourceBundle labels = ResourceBundle.getBundle("demo");
     private static final String KEY = labels.getString("data.key");
     private static final String METADATA = labels.getString("data.enc");
@@ -62,6 +61,7 @@ public class DecryptServlet extends HttpServlet {
         out.println("<html lang=\"en\" data-theme=\"dark\">\n" + "<head>\n" + "    <meta charset=\"utf-8\">\n" + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" + "    <meta name=\"description\" content=\"Servlet for decrypt json file with Nimbus JOSE+JWT library\">\n" + "    <link rel=\"stylesheet\" href=\"webjars/pico/css/pico.min.css\">\n" + "    <title>Decrypt json with Nimbus JOSE+JWT library</title>\n" + "</head>\n<body>\n" + "<main class=\"container\">");
         String message = "Decrypt demo!";
         out.println("<h1>" + message + "</h1>");
+        out.println("<a href=\"index.jsp\">Back</a>");
         out.println("<pre>");
         String sDecrypted = decryptPayload(KEY, METADATA).toString();
         out.println("Decrypted:" + sDecrypted);
@@ -125,18 +125,16 @@ public class DecryptServlet extends HttpServlet {
 
         try {
             if (privateKey.length() == 0) {
-                log.warning("Missing parameter privateKey");
-                response.sendError(422, "Missing parameter privateKey");
+                handleWarning(response,422,"Missing parameter privateKey");
                 return;
             }
             if (encodedString.length() == 0) {
-                log.warning("Missing parameter encodedString");
-                response.sendError(422, "Missing parameter encodedString");
+                handleWarning(response,422,"Missing parameter encodedString");
                 return;
             }
             Payload pDecrypted = decryptPayload(privateKey, encodedString);
             if (pDecrypted == null) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Decryption failed - see logs for details");
+                handleError(response,HttpServletResponse.SC_BAD_REQUEST,"Decryption failed - see logs for details");
                 return;
             }
             // start processing
@@ -150,15 +148,5 @@ public class DecryptServlet extends HttpServlet {
             log.severe(String.format("doPost failed with IOException %s", e.getMessage()));
         }
     }
-
-    /**
-     * Servlet for Nimbus JOSE+JWT library
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Servlet tools for Nimbus JOSE+JWT library";
-    }// </editor-fold>
 
 }

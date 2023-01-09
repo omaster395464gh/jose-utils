@@ -35,7 +35,7 @@ import java.util.ResourceBundle;
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, //   2MB
         maxFileSize = 1024 * 1024 * 10,      //  10MB
         maxRequestSize = 1024 * 1024 * 15)   //  15MB
-public class VerifyServlet extends HttpServlet {
+public class VerifyServlet extends HandlerServlet {
     private static final ResourceBundle labels = ResourceBundle.getBundle("demo");
     private static final String JWS = labels.getString("data.jws");
     private static final String KEY_JWS = labels.getString("key.jws");
@@ -78,28 +78,11 @@ public class VerifyServlet extends HttpServlet {
         }
     }
 
-    public void handleWarning(@NonNull HttpServletResponse response, @NonNull int iHttpErrorCode, @NonNull String sWarning) {
-        try {
-            log.warning(sWarning);
-            response.sendError(iHttpErrorCode, sWarning);
-        } catch (IOException e) {
-            log.severe(String.format("IOException while sendError - %s", e.getMessage()));
-        }
-    }
-
-    public void handleError(@NonNull HttpServletResponse response, @NonNull int iHttpErrorCode, @NonNull String sError) {
-        try {
-            log.severe(sError);
-            response.sendError(iHttpErrorCode, sError);
-        } catch (IOException e) {
-            log.severe(String.format("IOException while sendError - %s", e.getMessage()));
-        }
-    }
-
     public void processRequest(@NonNull PrintWriter out) {
         out.println("<html lang=\"en\" data-theme=\"dark\">\n" + "<head>\n" + "    <meta charset=\"utf-8\">\n" + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" + "    <meta name=\"description\" content=\"Servlet for verify sets with Nimbus JOSE+JWT library\">\n" + "    <link rel=\"stylesheet\" href=\"webjars/pico/css/pico.min.css\">\n" + "    <title>Verify sets with Nimbus JOSE+JWT library</title>\n" + "</head>\n<body>\n" + "<main class=\"container\">");
         String message = "Verify demo!";
         out.println("<h1>" + message + "</h1>");
+        out.println("<a href=\"index.jsp\">Back</a>");
         out.println("<pre>");
         try {
             JWT jwt = JWTParser.parse(JWS);
@@ -221,14 +204,5 @@ public class VerifyServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Servlet for Nimbus JOSE+JWT library
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Servlet tools for Nimbus JOSE+JWT library";
-    }// </editor-fold>
 
 }

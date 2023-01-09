@@ -6,7 +6,7 @@
 
     <groupId>de.pdv.demo</groupId>
     <artifactId>jose-utils</artifactId>
-    <version>0.11.3-SNAPSHOT</version>
+    <version>0.12.1-SNAPSHOT</version>
     <name>jose-utils</name>
     <packaging>war</packaging>
 
@@ -175,6 +175,14 @@
                     <outputReactorProjects>true</outputReactorProjects>
                     <outputFormat>all</outputFormat>
                     <outputName>bom</outputName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
         </plugins>
