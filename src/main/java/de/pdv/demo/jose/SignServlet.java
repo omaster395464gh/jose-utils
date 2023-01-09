@@ -49,9 +49,7 @@ public class SignServlet extends HandlerServlet {
             if (key != null) {
                 JWSSigner signer = new RSASSASigner(key.toRSAKey());
                 JWTClaimsSet claimsSet = JWTClaimsSet.parse(sPayload);
-                SignedJWT signedJWT = new SignedJWT(
-                        header,
-                        claimsSet);
+                SignedJWT signedJWT = new SignedJWT(header, claimsSet);
 
                 signedJWT.sign(signer);
                 return signedJWT;
@@ -64,12 +62,6 @@ public class SignServlet extends HandlerServlet {
         return null;
     }
 
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         log.info("doGet");
@@ -100,12 +92,6 @@ public class SignServlet extends HandlerServlet {
         log.info("Process complete");
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         String header = "";
@@ -144,10 +130,8 @@ public class SignServlet extends HandlerServlet {
                 return;
             }
             SignedJWT mySignedJWT = signSet(jwkSet, header, payload);
-            if (mySignedJWT != null)
-                response.getWriter().println(mySignedJWT.serialize());
-            else
-                handleWarning(response, HttpServletResponse.SC_BAD_REQUEST, "Sign failed - see logs for details");
+            if (mySignedJWT != null) response.getWriter().println(mySignedJWT.serialize());
+            else handleWarning(response, HttpServletResponse.SC_BAD_REQUEST, "Sign failed - see logs for details");
 
             log.info("Process complete");
         } catch (IOException e) {

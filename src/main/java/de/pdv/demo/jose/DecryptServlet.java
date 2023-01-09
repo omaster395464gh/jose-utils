@@ -72,12 +72,6 @@ public class DecryptServlet extends HandlerServlet {
         out.println("</main></body></html>");
     }
 
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         log.info("doGet");
@@ -92,12 +86,7 @@ public class DecryptServlet extends HandlerServlet {
         log.info("Process complete");
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     */
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         String privateKey = "";

@@ -18,7 +18,6 @@ import org.json.JSONStringer;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
@@ -102,12 +101,6 @@ public class VerifyServlet extends HandlerServlet {
         }
     }
 
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         log.info("doGet");
@@ -122,12 +115,6 @@ public class VerifyServlet extends HandlerServlet {
         log.info("Process complete");
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request  servlet request
-     * @param response servlet response
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         String sEventToken = "";
