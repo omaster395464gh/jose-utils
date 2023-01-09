@@ -149,14 +149,4 @@ public class DecryptServlet extends HandlerServlet {
         }
     }
 
-    /**
-     * Servlet for Nimbus JOSE+JWT library
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Servlet tools for Nimbus JOSE+JWT library";
-    }// </editor-fold>
-
 }

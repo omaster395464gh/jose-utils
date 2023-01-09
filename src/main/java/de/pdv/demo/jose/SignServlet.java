@@ -157,15 +157,4 @@ public class SignServlet extends HandlerServlet {
             handleError(response, HttpServletResponse.SC_BAD_REQUEST, "Verification failed");
         }
     }
-
-    /**
-     * Servlet for Nimbus JOSE+JWT library
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Servlet tools for Nimbus JOSE+JWT library";
-    }// </editor-fold>
-
 }

@@ -77,6 +77,12 @@ class SignServletTest extends Mockito {
         assertNotNull(is);
         SignedJWT mySignedJWT = servlet.signSet(is,SIGN_HEADER,SIGN_PAYLOAD);
         assertNull(mySignedJWT,"sign succeed but should fail because of wrong jwks");
+
+        InputStream is2 = getClass().getClassLoader().getResourceAsStream("jwks.json");
+        mySignedJWT = servlet.signSet(is2,"a","b");
+        assertNull(mySignedJWT,"sign succeed but should fail because of wrong jwks");
+
+
     }
 
     @Test
