@@ -13,7 +13,6 @@ import org.json.JSONObject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
@@ -29,7 +28,7 @@ import java.util.ResourceBundle;
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, //   2MB
         maxFileSize = 1024 * 1024 * 50,      //  50MB
         maxRequestSize = 1024 * 1024 * 60)   //  60MB
-public class DecryptServlet extends HttpServlet {
+public class DecryptServlet extends HandlerServlet {
     private static final ResourceBundle labels = ResourceBundle.getBundle("demo");
     private static final String KEY = labels.getString("data.key");
     private static final String METADATA = labels.getString("data.enc");
@@ -126,18 +125,16 @@ public class DecryptServlet extends HttpServlet {
 
         try {
             if (privateKey.length() == 0) {
-                log.warning("Missing parameter privateKey");
-                response.sendError(422, "Missing parameter privateKey");
+                handleWarning(response,422,"Missing parameter privateKey");
                 return;
             }
             if (encodedString.length() == 0) {
-                log.warning("Missing parameter encodedString");
-                response.sendError(422, "Missing parameter encodedString");
+                handleWarning(response,422,"Missing parameter encodedString");
                 return;
             }
             Payload pDecrypted = decryptPayload(privateKey, encodedString);
             if (pDecrypted == null) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Decryption failed - see logs for details");
+                handleError(response,HttpServletResponse.SC_BAD_REQUEST,"Decryption failed - see logs for details");
                 return;
             }
             // start processing

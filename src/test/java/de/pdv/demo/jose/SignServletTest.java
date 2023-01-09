@@ -80,29 +80,6 @@ class SignServletTest extends Mockito {
     }
 
     @Test
-    void testHandleWarning() throws IOException {
-        when(servlet.getServletConfig()).thenReturn(servletConfig);
-        when(response.getWriter()).thenReturn(printWriter);
-        assertNotNull(servlet);
-        assertNotNull(response);
-        servlet.handleWarning(response, 422, "Warning");
-        verify(response, atLeastOnce()).sendError(422, "Warning");
-        when(response.getWriter()).thenThrow(IOException.class);
-        servlet.handleWarning(response, 422, "Warning");
-    }
-    @Test
-    void testHandleError() throws IOException {
-        when(servlet.getServletConfig()).thenReturn(servletConfig);
-        when(response.getWriter()).thenReturn(printWriter);
-        assertNotNull(servlet);
-        assertNotNull(response);
-        servlet.handleError(response, 422, "Error");
-        verify(response, atLeastOnce()).sendError(422, "Error");
-        when(response.getWriter()).thenThrow(IOException.class);
-        servlet.handleError(response, 422, "Error");
-    }
-
-    @Test
     void doGet() throws IOException {
         when(servlet.getServletConfig()).thenReturn(servletConfig);
         when(response.getWriter()).thenReturn(printWriter);
@@ -127,12 +104,5 @@ class SignServletTest extends Mockito {
         servlet.doPost(request, response);
         when(request.getParts()).thenReturn(new ArrayList<>());
         servlet.doPost(request, response);
-    }
-
-    @Test
-    void getServletInfo() {
-        when(servlet.getServletConfig()).thenReturn(servletConfig);
-        String s = servlet.getServletInfo();
-        assertEquals("Servlet tools for Nimbus JOSE+JWT library", s);
     }
 }

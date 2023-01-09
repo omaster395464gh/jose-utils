@@ -17,7 +17,6 @@ import org.json.JSONObject;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
@@ -34,7 +33,7 @@ import java.util.ResourceBundle;
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, //   2MB
         maxFileSize = 1024 * 1024 * 10,      //  10MB
         maxRequestSize = 1024 * 1024 * 15)   //  15MB
-public class SignServlet extends HttpServlet {
+public class SignServlet extends HandlerServlet {
     private static final ResourceBundle labels = ResourceBundle.getBundle("demo");
     private static final String SIGN_HEADER = labels.getString("sign.header");
     private static final String SIGN_PAYLOAD = labels.getString("sign.payload");
@@ -66,25 +65,6 @@ public class SignServlet extends HttpServlet {
         }
         return null;
     }
-
-    public void handleWarning(@NonNull HttpServletResponse response, @NonNull int iHttpErrorCode, @NonNull String sWarning) {
-        try {
-            log.warning(sWarning);
-            response.sendError(iHttpErrorCode, sWarning);
-        } catch (IOException e) {
-            log.severe(String.format("IOException while sendError - %s", e.getMessage()));
-        }
-    }
-
-    public void handleError(@NonNull HttpServletResponse response, @NonNull int iHttpErrorCode, @NonNull String sError) {
-        try {
-            log.severe(sError);
-            response.sendError(iHttpErrorCode, sError);
-        } catch (IOException e) {
-            log.severe(String.format("IOException while sendError - %s", e.getMessage()));
-        }
-    }
-
 
     /**
      * Handles the HTTP <code>GET</code> method.
