@@ -106,6 +106,8 @@ class SignServletTest extends Mockito {
         assertNotNull(labels);
         servlet.doPost(request, response);
         verify(response, atLeastOnce()).sendError(422, MISSING_KEY);
+
+        when(response.getWriter()).thenThrow(IOException.class);
         doThrow(new IOException()).when(response).sendError(422, MISSING_KEY);
         servlet.doPost(request, response);
         when(request.getParts()).thenReturn(new ArrayList<>());
