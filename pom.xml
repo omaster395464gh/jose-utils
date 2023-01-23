@@ -6,7 +6,7 @@
 
     <groupId>de.pdv.demo</groupId>
     <artifactId>jose-utils</artifactId>
-    <version>0.12.5-SNAPSHOT</version>
+    <version>0.13.1-SNAPSHOT</version>
     <name>jose-utils</name>
     <packaging>war</packaging>
 
