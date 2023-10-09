@@ -39,7 +39,7 @@ Add to Tomcat logging.properties:
 de.pdv.demo.level = ALL
 ```
 
-### Deploy to tomcat 9.x (IntelliJ / Netbeans)
+### Deploy to tomcat 10.1.x (IntelliJ / Netbeans)
 Run http://localhost:port/
 
 Examples:

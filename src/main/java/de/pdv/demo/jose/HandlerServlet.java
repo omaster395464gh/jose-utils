@@ -3,8 +3,8 @@ package de.pdv.demo.jose;
 import lombok.NonNull;
 import lombok.extern.java.Log;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
