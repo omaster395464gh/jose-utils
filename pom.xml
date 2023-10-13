@@ -6,14 +6,14 @@
 
     <groupId>de.pdv.demo</groupId>
     <artifactId>jose-utils</artifactId>
-    <version>0.13.1-SNAPSHOT</version>
+    <version>0.15.2-SNAPSHOT</version>
     <name>jose-utils</name>
     <packaging>war</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
         <junit.version>5.10.0</junit.version>
         <sonar.organization>omaster395464gh</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
