@@ -177,6 +177,7 @@
                     <outputName>bom</outputName>
                 </configuration>
             </plugin>
+            <!-- Avoid plugin validation warnings -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
