@@ -6,7 +6,7 @@
 
     <groupId>de.pdv.demo</groupId>
     <artifactId>jose-utils</artifactId>
-    <version>0.15.2-SNAPSHOT</version>
+    <version>0.15.4-SNAPSHOT</version>
     <name>jose-utils</name>
     <packaging>war</packaging>
 
@@ -181,6 +181,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
             </plugin>
             <!-- https://mvnrepository.com/artifact/com.google.cloud.tools/jib-maven-plugin -->
             <plugin>
