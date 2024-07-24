@@ -6,6 +6,9 @@
 version: 2
 updates:
   - package-ecosystem: "maven" # See documentation for possible values
-    directory: "/" # Location of package manifests
-    schedule:
-      interval: "daily"
+      directory: "/" # Location of package manifests
+      schedule:
+        interval: "daily"
+      target-branch: "SERVLET60"
+      labels:
+        - "servlet60"
