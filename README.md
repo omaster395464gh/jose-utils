@@ -12,7 +12,7 @@ Servlets for decrypt json file and verify sets with Nimbus JOSE+JWT library
 * Nimbus JOSE+JWT (connect2id) for decryption and set validation
 * Uses JavaMelody for monitoring
 * Uses Pico.css webjar for elegant styles with a minimal css framework
-* Use Java 11 LTS (also tested with Java 17 LTS)
+* Use Java 17 LTS (also tested with Java 21 LTS)
 
 ## Run tests
 `mvn test`
