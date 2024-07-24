@@ -9,3 +9,15 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    target-branch: "main"
+    ignore:
+      - dependency-name: "net.bull.javamelody:javamelody-core"
+        versions: ["2.x"]
+
+  - package-ecosystem: "maven" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "daily"
+    target-branch: "SERVLET60"
+    labels:
+      - "servlet60"
