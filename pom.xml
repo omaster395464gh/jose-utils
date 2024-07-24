@@ -12,8 +12,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
         <junit.version>5.10.3</junit.version>
         <sonar.organization>omaster395464gh</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20230618</version>
+            <version>20240303</version>
             <scope>compile</scope>
         </dependency>
 
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
-            <version>9.31</version>
+            <version>9.40</version>
             <scope>compile</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/net.bull.javamelody/javamelody-core  -->
@@ -80,7 +80,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.13.0</version>
+            <version>2.16.1</version>
             <scope>compile</scope>
         </dependency>
 
@@ -108,7 +108,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>0.8.10</version>
+                        <version>0.8.12</version>
                         <executions>
                             <execution>
                                 <id>prepare-agent</id>
@@ -147,7 +147,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.3.1</version>
             </plugin>
             <!-- https://mvnrepository.com/artifact/org.cyclonedx/cyclonedx-maven-plugin -->
             <plugin>
