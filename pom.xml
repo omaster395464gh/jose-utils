@@ -15,7 +15,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
         <junit.version>5.13.4</junit.version>
-        <jettyVersion>12.1.0</jettyVersion>
+        <jettyVersion>12.1.1</jettyVersion>
         <sonar.organization>omaster395464gh</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
