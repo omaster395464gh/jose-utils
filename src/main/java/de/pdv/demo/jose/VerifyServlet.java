@@ -166,7 +166,7 @@ public class VerifyServlet extends HandlerServlet {
         }
     }
 
-    protected void processPostForSignedJWT(@NonNull HttpServletResponse response, @NonNull boolean bResult) {
+    protected void processPostForSignedJWT(@NonNull HttpServletResponse response, boolean bResult) {
         if (bResult) {
             try {
                 response.getWriter().println(VERIFIED_JSON);

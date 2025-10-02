@@ -19,7 +19,7 @@ public class HandlerServlet extends HttpServlet {
      * @param iHttpErrorCode HTTP Status Code
      * @param sWarning       Warning Message
      */
-    public void handleWarning(@NonNull HttpServletResponse response, @NonNull int iHttpErrorCode, @NonNull String sWarning) {
+    public void handleWarning(@NonNull HttpServletResponse response, int iHttpErrorCode, @NonNull String sWarning) {
         try {
             log.warning(sWarning);
             response.sendError(iHttpErrorCode, sWarning);
@@ -35,7 +35,7 @@ public class HandlerServlet extends HttpServlet {
      * @param iHttpErrorCode HTTP Status Code
      * @param sError         Error message
      */
-    public void handleError(@NonNull HttpServletResponse response, @NonNull int iHttpErrorCode, @NonNull String sError) {
+    public void handleError(@NonNull HttpServletResponse response, int iHttpErrorCode, @NonNull String sError) {
         try {
             log.severe(sError);
             response.sendError(iHttpErrorCode, sError);
