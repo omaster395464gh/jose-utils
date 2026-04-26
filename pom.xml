@@ -16,7 +16,7 @@
         <jettyVersion>12.1.8</jettyVersion>
         <sonar.organization>omaster395464gh</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <lombok.version>1.18.44</lombok.version>
+        <lombok.version>1.18.46</lombok.version>
     </properties>
 
     <dependencies>
